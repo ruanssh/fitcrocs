@@ -31,8 +31,15 @@ async function bootstrap() {
     }),
   );
 
+  const configService = app.get(ConfigService);
+  const corsAllowedOrigins = configService.get<string>('CORS_ALLOWED_ORIGINS');
+  const parsedCorsOrigins = (corsAllowedOrigins ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+
   app.enableCors({
-    origin: true,
+    origin: parsedCorsOrigins.length > 0 ? parsedCorsOrigins : true,
     credentials: true,
   });
 
@@ -49,7 +56,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const configService = app.get(ConfigService);
   const port = Number(configService.get('PORT') ?? 3000);
 
   await app.listen(port);
