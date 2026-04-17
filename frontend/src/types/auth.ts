@@ -11,7 +11,15 @@ export type LoginPayload = {
   password: string;
 };
 
+export type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export type LoginResponse = {
   user: AuthUser;
   access_token: string;
 };
+
+export type RegisterResponse = LoginResponse;

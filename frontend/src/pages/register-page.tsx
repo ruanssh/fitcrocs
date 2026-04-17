@@ -1,15 +1,18 @@
+import axios from 'axios';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/use-auth';
 
-export function LoginPage() {
+export function RegisterPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, isAuthenticated } = useAuth();
+  const { register, isAuthenticated } = useAuth();
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,14 +27,31 @@ export function LoginPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsSubmitting(true);
     setError(null);
 
+    if (password !== confirmPassword) {
+      setError('A confirmacao da senha nao confere.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      await login({ email, password });
+      await register({ name, email, password });
       navigate(redirectPath, { replace: true });
-    } catch {
-      setError('Nao foi possivel autenticar. Verifique email e senha.');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        if (typeof message === 'string') {
+          setError(message);
+        } else if (Array.isArray(message) && message.length > 0) {
+          setError(String(message[0]));
+        } else {
+          setError('Nao foi possivel criar sua conta agora.');
+        }
+      } else {
+        setError('Nao foi possivel criar sua conta agora.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -46,13 +66,26 @@ export function LoginPage() {
           Fitcrocs
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-          Acesse seu painel de treino
+          Criar nova conta
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Entre com sua conta para consultar frequencia mensal e desempenho.
+          Cadastre seu perfil para registrar treinos e acompanhar sua evolucao.
         </p>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">Nome</span>
+            <input
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoComplete="name"
+              minLength={2}
+              required
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:border-emerald-500 focus:bg-white focus:ring-2"
+            />
+          </label>
+
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">Email</span>
             <input
@@ -71,7 +104,23 @@ export function LoginPage() {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              minLength={6}
+              required
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:border-emerald-500 focus:bg-white focus:ring-2"
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              Confirmar senha
+            </span>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={6}
               required
               className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:border-emerald-500 focus:bg-white focus:ring-2"
             />
@@ -88,17 +137,14 @@ export function LoginPage() {
             disabled={isSubmitting}
             className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? 'Entrando...' : 'Entrar'}
+            {isSubmitting ? 'Criando conta...' : 'Criar conta'}
           </button>
         </form>
 
         <p className="mt-5 text-sm text-slate-600">
-          Nao tem conta?{' '}
-          <Link
-            className="font-semibold text-emerald-700 hover:text-emerald-800"
-            to="/register"
-          >
-            Criar conta
+          Ja tem conta?{' '}
+          <Link className="font-semibold text-emerald-700 hover:text-emerald-800" to="/login">
+            Entrar
           </Link>
         </p>
       </section>

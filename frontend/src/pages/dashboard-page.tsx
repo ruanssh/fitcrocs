@@ -1,7 +1,6 @@
-import { Activity, Dumbbell, LogOut, TrendingUp } from 'lucide-react';
+import { Activity, Dumbbell, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useAuth } from '../auth/use-auth';
 import { HeatmapPanel } from '../components/dashboard/heatmap-panel';
 import { KpiCard } from '../components/dashboard/kpi-card';
 import { PeriodFilter } from '../components/dashboard/period-filter';
@@ -18,7 +17,6 @@ function formatNumber(value: number) {
 }
 
 export function DashboardPage() {
-  const { user, logout } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { from, to } = normalizeMonthRange(
@@ -51,34 +49,16 @@ export function DashboardPage() {
     <div className="relative min-h-screen overflow-hidden bg-slate-100 pb-10">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),transparent_40%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.16),transparent_45%),linear-gradient(180deg,#f6faf9_0%,#edf4f2_100%)]" />
 
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-8 sm:px-6 lg:px-8">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
-            Fitcrocs Dashboard
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            Evolucao de treino
-          </h1>
-          <p className="mt-2 text-sm text-slate-600 sm:text-base">
-            Controle mensal de frequencia e exercicios mais praticados.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden rounded-xl border border-slate-200 bg-white/90 px-4 py-2 text-right shadow-sm sm:block">
-            <p className="text-xs uppercase tracking-wide text-slate-500">Usuario</p>
-            <p className="text-sm font-medium text-slate-800">{user?.name ?? '-'}</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-          >
-            <LogOut className="h-4 w-4" />
-            Sair
-          </button>
-        </div>
+      <header className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+          Dashboard
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+          Evolucao de treino
+        </h1>
+        <p className="mt-2 text-sm text-slate-600 sm:text-base">
+          Controle mensal de frequencia e exercicios mais praticados.
+        </p>
       </header>
 
       <main className="mx-auto w-full max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
