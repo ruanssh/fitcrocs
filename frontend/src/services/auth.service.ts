@@ -21,3 +21,11 @@ export async function getMe() {
   const { data } = await http.get<AuthUser>('/users/me');
   return data;
 }
+
+export async function updateMyPhoto(photoBase64: string | null) {
+  const { data } = await http.patch<AuthUser>('/users/me/photo', {
+    photoBase64,
+  });
+
+  return data;
+}

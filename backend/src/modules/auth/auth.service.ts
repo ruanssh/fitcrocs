@@ -41,6 +41,7 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
+        photoBase64: user.photoBase64,
       },
       access_token,
     };

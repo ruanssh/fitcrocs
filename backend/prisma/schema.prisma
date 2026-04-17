@@ -16,6 +16,7 @@ model User {
   name           String            @db.VarChar(120)
   email          String            @unique @db.VarChar(190)
   passwordHash   String            @map("password_hash") @db.VarChar(255)
+  photoBase64    String?           @map("photo_base64") @db.LongText
   createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamp(0)
   workouts       Workout[]

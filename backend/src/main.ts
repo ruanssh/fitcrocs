@@ -1,8 +1,11 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+
+const REQUEST_BODY_LIMIT = '12mb';
 
 async function bootstrap() {
   Object.defineProperty(BigInt.prototype, 'toJSON', {
@@ -12,7 +15,13 @@ async function bootstrap() {
     configurable: true,
   });
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.useBodyParser('json', { limit: REQUEST_BODY_LIMIT });
+  app.useBodyParser('urlencoded', {
+    limit: REQUEST_BODY_LIMIT,
+    extended: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

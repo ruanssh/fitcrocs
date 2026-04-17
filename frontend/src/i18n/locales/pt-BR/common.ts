@@ -1,8 +1,8 @@
 export const commonPtBr = {
   brand: 'Fitcrocs',
-  user: 'Usuário',
   dashboard: 'Dashboard',
   workouts: 'Treinos',
+  profile: 'Perfil',
   actions: 'Ações',
   loading: 'Carregando...',
   back: 'Voltar',
@@ -14,4 +14,31 @@ export const commonPtBr = {
   yes: 'Sim',
   no: 'Não',
   yearCurrent: 'ano atual',
+  menu: {
+    openUserMenu: 'Abrir menu do usuário',
+  },
+  profilePage: {
+    badge: 'Perfil',
+    title: 'Informações pessoais',
+    subtitle: 'Gerencie seus dados de conta e sessão atual.',
+    fields: {
+      name: 'Nome',
+      email: 'Email',
+    },
+    photo: {
+      title: 'Foto de perfil',
+      subtitle: 'Envie uma imagem PNG, JPG, JPEG ou WEBP com até 10MB.',
+      choose: 'Escolher imagem',
+      save: 'Salvar foto',
+      saving: 'Salvando foto...',
+      remove: 'Remover foto',
+      success: 'Foto atualizada com sucesso.',
+      removeSuccess: 'Foto removida com sucesso.',
+      invalidType: 'Formato inválido. Use PNG, JPG, JPEG ou WEBP.',
+      invalidSize: 'A imagem deve ter no máximo 10MB.',
+      noSelection: 'Escolha uma imagem antes de salvar.',
+      genericError: 'Não foi possível atualizar a foto agora.',
+      previewAlt: 'Prévia da foto de perfil',
+    },
+  },
 } as const;

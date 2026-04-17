@@ -10,6 +10,7 @@ import {
   getMe,
   login as loginService,
   register as registerService,
+  updateMyPhoto as updateMyPhotoService,
 } from '../services/auth.service';
 import type { AuthUser, LoginPayload, RegisterPayload } from '../types/auth';
 
@@ -20,6 +21,8 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
+  refreshUser: () => Promise<void>;
+  updateMyPhoto: (photoBase64: string | null) => Promise<void>;
   logout: () => void;
 };
 
@@ -75,6 +78,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const profile = await getMe();
+    setUser(profile);
+  }, []);
+
+  const updateMyPhoto = useCallback(async (photoBase64: string | null) => {
+    const profile = await updateMyPhotoService(photoBase64);
+    setUser(profile);
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -83,9 +96,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: Boolean(token),
       login,
       register,
+      refreshUser,
+      updateMyPhoto,
       logout,
     }),
-    [user, token, isLoading, login, register, logout],
+    [
+      user,
+      token,
+      isLoading,
+      login,
+      register,
+      refreshUser,
+      updateMyPhoto,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
