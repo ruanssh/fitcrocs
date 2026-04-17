@@ -1,45 +1,24 @@
 import { Activity, Dumbbell, TrendingUp } from 'lucide-react';
-import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { HeatmapPanel } from '../components/dashboard/heatmap-panel';
 import { KpiCard } from '../components/dashboard/kpi-card';
-import { PeriodFilter } from '../components/dashboard/period-filter';
 import { TopExercisesPanel } from '../components/dashboard/top-exercises-panel';
 import {
   useDashboardHeatmap,
   useDashboardSummary,
   useTopExercises,
 } from '../hooks/use-dashboard';
-import { normalizeMonthRange } from '../lib/date-range';
+import { getCurrentYearRange } from '../lib/date-range';
 
 function formatNumber(value: number) {
   return new Intl.NumberFormat('pt-BR').format(value);
 }
 
 export function DashboardPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const { from, to } = normalizeMonthRange(
-    searchParams.get('from'),
-    searchParams.get('to'),
-  );
-
-  const filters = useMemo(() => ({ from, to }), [from, to]);
+  const filters = getCurrentYearRange();
 
   const summaryQuery = useDashboardSummary(filters);
   const heatmapQuery = useDashboardHeatmap(filters);
   const topExercisesQuery = useTopExercises({ ...filters, limit: 10 });
-
-  function updateRange(next: { from?: string; to?: string }) {
-    setSearchParams((current) => {
-      const params = new URLSearchParams(current);
-
-      if (next.from) params.set('from', next.from);
-      if (next.to) params.set('to', next.to);
-
-      return params;
-    });
-  }
 
   const hasError = Boolean(
     summaryQuery.error || heatmapQuery.error || topExercisesQuery.error,
@@ -62,12 +41,9 @@ export function DashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-        <PeriodFilter
-          from={from}
-          to={to}
-          onChangeFrom={(value) => updateRange({ from: value })}
-          onChangeTo={(value) => updateRange({ to: value })}
-        />
+        <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-4 text-sm text-slate-700 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
+          Dados exibidos para o ano atual ({filters.from.slice(0, 4)}), de janeiro a dezembro.
+        </section>
 
         {hasError ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">

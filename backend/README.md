@@ -26,7 +26,7 @@ Arquivo `.env`:
 
 ```env
 PORT=3000
-DATABASE_URL="mysql://USER:PASSWORD:3306/fitcrocs"
+DATABASE_URL="mysql://USER:PASSWORD@HOST:3306/fitcrocs"
 JWT_SECRET="fitcrocs-super-secret-change-me"
 JWT_EXPIRES_IN="7d"
 ```

@@ -28,7 +28,7 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
           Frequencia diaria
         </h2>
         <p className="mt-1 text-sm text-slate-600">
-          Visualizacao de treinos por dia, com intensidade em escala progressiva.
+          Visualizacao dos treinos do ano atual (janeiro a dezembro), com intensidade em escala progressiva.
         </p>
       </header>
 

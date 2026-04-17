@@ -177,11 +177,9 @@ export class DashboardService {
 
     if (!query.from || !query.to) {
       const now = new Date();
-      const endYear = now.getUTCFullYear();
-      const endMonth = now.getUTCMonth() + 1;
-      const start = this.shiftMonth(endYear, endMonth, -11);
+      const currentYear = now.getUTCFullYear();
 
-      return this.buildPeriod(start.year, start.month, endYear, endMonth);
+      return this.buildPeriod(currentYear, 1, currentYear, 12);
     }
 
     const from = this.parseYearMonth(query.from);
@@ -239,14 +237,6 @@ export class DashboardService {
     const month = Number(monthText);
 
     return { year, month };
-  }
-
-  private shiftMonth(year: number, month: number, delta: number) {
-    const date = new Date(Date.UTC(year, month - 1 + delta, 1));
-    return {
-      year: date.getUTCFullYear(),
-      month: date.getUTCMonth() + 1,
-    };
   }
 
   private enumerateDays(startDate: string, endDate: string) {

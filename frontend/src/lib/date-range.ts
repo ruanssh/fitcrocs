@@ -1,16 +1,10 @@
-function toYearMonth(date: Date) {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  return `${year}-${month}`;
-}
-
-export function getDefaultMonthRange() {
-  const end = new Date();
-  const start = new Date(end.getFullYear(), end.getMonth() - 11, 1);
+export function getCurrentYearRange() {
+  const now = new Date();
+  const year = now.getFullYear();
 
   return {
-    from: toYearMonth(start),
-    to: toYearMonth(end),
+    from: `${year}-01`,
+    to: `${year}-12`,
   };
 }
 
@@ -18,12 +12,22 @@ export function normalizeMonthRange(
   fromValue: string | null,
   toValue: string | null,
 ) {
-  if (fromValue && toValue) {
+  const currentYearRange = getCurrentYearRange();
+
+  if (!fromValue || !toValue) {
+    return currentYearRange;
+  }
+
+  const fromYear = Number(fromValue.split('-')[0]);
+  const toYear = Number(toValue.split('-')[0]);
+  const currentYear = Number(currentYearRange.from.split('-')[0]);
+
+  if (fromYear === currentYear && toYear === currentYear) {
     return {
-      from: fromValue,
-      to: toValue,
+      from: `${currentYear}-01`,
+      to: `${currentYear}-12`,
     };
   }
 
-  return getDefaultMonthRange();
+  return currentYearRange;
 }
