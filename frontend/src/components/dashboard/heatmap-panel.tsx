@@ -13,6 +13,15 @@ const theme = {
   light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
 };
 
+const mobileWeekdayLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+const mobileLevelClasses = [
+  'border-slate-200 bg-white text-slate-500',
+  'border-emerald-200 bg-emerald-50 text-emerald-700',
+  'border-emerald-300 bg-emerald-100 text-emerald-800',
+  'border-emerald-400 bg-emerald-200 text-emerald-900',
+  'border-emerald-500 bg-emerald-500 text-white',
+];
+
 function toActivities(days: HeatmapDay[]): Activity[] {
   return days.map((day) => ({
     date: day.date,
@@ -21,12 +30,69 @@ function toActivities(days: HeatmapDay[]): Activity[] {
   }));
 }
 
+function parseDate(date: string) {
+  return new Date(`${date}T00:00:00.000Z`);
+}
+
+function formatMonthLabel(date: string) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(parseDate(date));
+}
+
+function getMonthSummaries(days: HeatmapDay[]) {
+  const months = new Map<
+    string,
+    {
+      monthLabel: string;
+      totalWorkouts: number;
+      activeDays: number;
+      leadingEmptyDays: number;
+      days: HeatmapDay[];
+    }
+  >();
+
+  days.forEach((day) => {
+    const monthKey = day.date.slice(0, 7);
+
+    if (!months.has(monthKey)) {
+      const parsedDate = parseDate(day.date);
+      const weekday = parsedDate.getUTCDay();
+      const leadingEmptyDays = weekday === 0 ? 6 : weekday - 1;
+
+      months.set(monthKey, {
+        monthLabel: formatMonthLabel(day.date),
+        totalWorkouts: 0,
+        activeDays: 0,
+        leadingEmptyDays,
+        days: [],
+      });
+    }
+
+    const month = months.get(monthKey);
+
+    if (!month) return;
+
+    month.days.push(day);
+    month.totalWorkouts += day.count;
+
+    if (day.count > 0) {
+      month.activeDays += 1;
+    }
+  });
+
+  return Array.from(months.values());
+}
+
 export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
   const { t } = useTranslation('dashboard');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [isCompact, setIsCompact] = useState(false);
   const activities = toActivities(days);
   const dayByDate = useMemo(() => new Map(days.map((day) => [day.date, day])), [days]);
+  const monthSummaries = useMemo(() => getMonthSummaries(days), [days]);
 
   const selectedDay = selectedDate ? dayByDate.get(selectedDate) : null;
 
@@ -72,20 +138,67 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
         </p>
       </header>
 
-      <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500 sm:hidden">
-        Arraste para o lado para ver todos os meses e toque em um dia para abrir os detalhes.
-      </div>
+      {isCompact ? (
+        <div className="space-y-4 sm:hidden">
+          {monthSummaries.map((month) => (
+            <article key={month.monthLabel} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="mb-3 flex items-end justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold capitalize text-slate-900">{month.monthLabel}</h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {month.totalWorkouts} treino(s) em {month.activeDays} dia(s)
+                  </p>
+                </div>
+              </div>
 
-      <div className="overflow-x-auto pb-1">
+              <div className="grid grid-cols-7 gap-1.5">
+                {mobileWeekdayLabels.map((label) => (
+                  <span
+                    key={label}
+                    className="pb-1 text-center text-[10px] font-semibold uppercase tracking-wide text-slate-400"
+                  >
+                    {label}
+                  </span>
+                ))}
+
+                {Array.from({ length: month.leadingEmptyDays }).map((_, index) => (
+                  <span key={`${month.monthLabel}-empty-${index}`} className="h-10 rounded-lg" />
+                ))}
+
+                {month.days.map((day) => {
+                  const isSelected = selectedDate === day.date;
+                  const levelClass = mobileLevelClasses[day.level] ?? mobileLevelClasses[0];
+
+                  return (
+                    <button
+                      key={day.date}
+                      type="button"
+                      onClick={() => setSelectedDate(day.date)}
+                      className={`flex h-10 flex-col items-center justify-center rounded-lg border text-xs font-semibold transition ${levelClass} ${isSelected ? 'ring-2 ring-slate-900 ring-offset-1 ring-offset-slate-50' : ''}`}
+                      aria-label={t('heatmap.tooltip', {
+                        count: day.count,
+                        date: new Date(day.date).toLocaleDateString('pt-BR'),
+                      })}
+                    >
+                      <span>{parseDate(day.date).getUTCDate()}</span>
+                      {day.count > 0 ? <span className="text-[10px] leading-none">{day.count}</span> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
         <ActivityCalendar
           data={activities}
           loading={isLoading}
           theme={theme}
           colorScheme="light"
           maxLevel={4}
-          blockSize={isCompact ? 11 : 15}
-          blockMargin={isCompact ? 3 : 4}
-          fontSize={isCompact ? 10 : 13}
+          blockSize={15}
+          blockMargin={4}
+          fontSize={13}
           labels={{
             totalCount: t('heatmap.totalCount'),
           }}
@@ -104,10 +217,10 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
               className: 'cursor-pointer',
             })
           }
-          showWeekdayLabels={!isCompact}
+          showWeekdayLabels
           weekStart={1}
         />
-      </div>
+      )}
 
       {selectedDay ? (
         <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
