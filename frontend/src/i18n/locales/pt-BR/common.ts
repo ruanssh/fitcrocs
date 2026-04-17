@@ -1,0 +1,17 @@
+export const commonPtBr = {
+  brand: 'Fitcrocs',
+  user: 'Usuário',
+  dashboard: 'Dashboard',
+  workouts: 'Treinos',
+  actions: 'Ações',
+  loading: 'Carregando...',
+  back: 'Voltar',
+  save: 'Salvar',
+  remove: 'Remover',
+  cancel: 'Cancelar',
+  noData: 'Sem dados para exibir.',
+  logout: 'Sair',
+  yes: 'Sim',
+  no: 'Não',
+  yearCurrent: 'ano atual',
+} as const;

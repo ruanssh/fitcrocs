@@ -1,0 +1,30 @@
+export const authPtBr = {
+  login: {
+    title: 'Acesse seu painel de treino',
+    subtitle: 'Entre com sua conta para consultar frequência anual e desempenho.',
+    email: 'Email',
+    password: 'Senha',
+    submit: 'Entrar',
+    submitting: 'Entrando...',
+    noAccount: 'Não tem conta?',
+    createAccount: 'Criar conta',
+    error: 'Não foi possível autenticar. Verifique email e senha.',
+  },
+  register: {
+    title: 'Criar nova conta',
+    subtitle: 'Cadastre seu perfil para registrar treinos e acompanhar sua evolução.',
+    name: 'Nome',
+    email: 'Email',
+    password: 'Senha',
+    confirmPassword: 'Confirmar senha',
+    submit: 'Criar conta',
+    submitting: 'Criando conta...',
+    hasAccount: 'Já tem conta?',
+    signIn: 'Entrar',
+    passwordMismatch: 'A confirmação da senha não confere.',
+    genericError: 'Não foi possível criar sua conta agora.',
+  },
+  protectedRoute: {
+    loadingSession: 'Carregando sessão...',
+  },
+} as const;

@@ -117,31 +117,58 @@ export class DashboardService {
   async getHeatmap(userId: bigint, query: DashboardPeriodDto) {
     const period = this.resolvePeriod(query);
 
-    const rows = await this.prisma.$queryRaw<
-      Array<{ workoutDate: string; total: bigint | number }>
-    >(Prisma.sql`
-      SELECT
-        DATE_FORMAT(w.workout_date, '%Y-%m-%d') AS workoutDate,
-        COUNT(*) AS total
-      FROM workouts w
-      WHERE w.user_id = ${userId}
-        AND w.workout_date >= ${period.startDate}
-        AND w.workout_date <= ${period.endDate}
-      GROUP BY DATE_FORMAT(w.workout_date, '%Y-%m-%d')
-      ORDER BY workoutDate ASC
-    `);
+    const workouts = await this.prisma.workout.findMany({
+      where: {
+        userId,
+        workoutDate: {
+          gte: period.startDateTime,
+          lte: period.endDateTime,
+        },
+      },
+      select: {
+        id: true,
+        workoutDate: true,
+        notes: true,
+        startAt: true,
+        endAt: true,
+      },
+      orderBy: [{ workoutDate: 'asc' }, { createdAt: 'asc' }],
+    });
 
-    const countByDate = new Map(
-      rows.map((row) => [row.workoutDate, Number(row.total)]),
-    );
+    const workoutsByDate = new Map<
+      string,
+      Array<{
+        id: string;
+        notes: string | null;
+        startAt: string | null;
+        endAt: string | null;
+      }>
+    >();
+
+    for (const workout of workouts) {
+      const key = this.toDateKey(workout.workoutDate);
+      const current = workoutsByDate.get(key) ?? [];
+
+      current.push({
+        id: workout.id.toString(),
+        notes: workout.notes,
+        startAt: workout.startAt ? workout.startAt.toISOString() : null,
+        endAt: workout.endAt ? workout.endAt.toISOString() : null,
+      });
+
+      workoutsByDate.set(key, current);
+    }
+
     const days = this.enumerateDays(period.startDate, period.endDate).map(
       (date) => {
-        const count = countByDate.get(date) ?? 0;
+        const dayWorkouts = workoutsByDate.get(date) ?? [];
+        const count = dayWorkouts.length;
 
         return {
           date,
           count,
           level: this.resolveLevel(count),
+          workouts: dayWorkouts,
         };
       },
     );
@@ -250,6 +277,14 @@ export class DashboardService {
     }
 
     return result;
+  }
+
+  private toDateKey(date: Date) {
+    const year = date.getUTCFullYear();
+    const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getUTCDate()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   private resolveLevel(count: number) {

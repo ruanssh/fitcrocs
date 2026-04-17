@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCreateWorkout } from '../hooks/use-workouts';
 import { addWorkoutExercise } from '../services/workouts.service';
@@ -12,6 +13,7 @@ function toDateTimeValue(date: string, time: string) {
 }
 
 export function NewWorkoutPage() {
+  const { t } = useTranslation('workouts');
   const navigate = useNavigate();
   const createWorkoutMutation = useCreateWorkout();
 
@@ -28,7 +30,7 @@ export function NewWorkoutPage() {
     const value = exerciseInput.trim();
 
     if (value.length < 2) {
-      setError('Digite um nome de exercicio com pelo menos 2 caracteres.');
+      setError(t('create.errors.exerciseMinLength'));
       return;
     }
 
@@ -63,12 +65,12 @@ export function NewWorkoutPage() {
     const endAt = toDateTimeValue(workoutDate, endTime);
 
     if (startAt && endAt && new Date(endAt).getTime() < new Date(startAt).getTime()) {
-      setError('Horario final precisa ser maior ou igual ao horario inicial.');
+      setError(t('create.errors.endBeforeStart'));
       return;
     }
 
     if (exercises.length === 0) {
-      setError('Adicione ao menos 1 exercicio para criar o treino.');
+      setError(t('create.errors.requiredExercise'));
       return;
     }
 
@@ -98,10 +100,10 @@ export function NewWorkoutPage() {
         if (typeof message === 'string') {
           setError(message);
         } else {
-          setError('Nao foi possivel criar o treino.');
+          setError(t('create.errors.generic'));
         }
       } else {
-        setError('Nao foi possivel criar o treino.');
+        setError(t('create.errors.generic'));
       }
     } finally {
       setIsSubmitting(false);
@@ -111,21 +113,23 @@ export function NewWorkoutPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-          Treinos
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
-          Adicionar treino
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Registre a data, o horario e as observacoes. Depois adicione os exercicios.
-        </p>
-      </div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+            {t('create.badge')}
+          </p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+            {t('create.title')}
+          </h1>
+          <p className="mt-2 text-sm text-slate-600">
+            {t('create.subtitle')}
+          </p>
+        </div>
 
       <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
         <form className="space-y-5" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Data do treino</span>
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('create.workoutDate')}
+            </span>
             <input
               type="date"
               value={workoutDate}
@@ -138,7 +142,7 @@ export function NewWorkoutPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">
-                Inicio (opcional)
+                {t('create.startOptional')}
               </span>
               <input
                 type="time"
@@ -150,7 +154,7 @@ export function NewWorkoutPage() {
 
             <label className="block">
               <span className="mb-1.5 block text-sm font-medium text-slate-700">
-                Fim (opcional)
+                {t('create.endOptional')}
               </span>
               <input
                 type="time"
@@ -162,7 +166,9 @@ export function NewWorkoutPage() {
           </div>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Observacoes</span>
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('create.notes')}
+            </span>
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
@@ -173,9 +179,11 @@ export function NewWorkoutPage() {
 
           <section className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
             <div className="mb-3">
-              <h2 className="text-sm font-semibold text-slate-800">Lista de exercicios do treino</h2>
+              <h2 className="text-sm font-semibold text-slate-800">
+                {t('create.exercisesTitle')}
+              </h2>
               <p className="mt-1 text-xs text-slate-600">
-                Adicione os exercicios na ordem em que voce executou.
+                {t('create.exercisesSubtitle')}
               </p>
             </div>
 
@@ -184,7 +192,7 @@ export function NewWorkoutPage() {
                 type="text"
                 value={exerciseInput}
                 onChange={(event) => setExerciseInput(event.target.value)}
-                placeholder="Ex.: Supino reto"
+                placeholder={t('create.exercisePlaceholder')}
                 className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:ring-2"
               />
               <button
@@ -193,14 +201,14 @@ export function NewWorkoutPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
               >
                 <Plus className="h-4 w-4" />
-                Adicionar
+                {t('create.addExercise')}
               </button>
             </div>
 
             <ul className="mt-3 space-y-2">
               {exercises.length === 0 ? (
                 <li className="rounded-xl border border-dashed border-slate-300 px-3 py-3 text-sm text-slate-600">
-                  Nenhum exercicio adicionado ainda.
+                  {t('create.noExercises')}
                 </li>
               ) : (
                 exercises.map((exercise, index) => (
@@ -222,7 +230,7 @@ export function NewWorkoutPage() {
                         className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-40"
                         disabled={index === 0}
                       >
-                        Subir
+                        {t('create.moveUp')}
                       </button>
                       <button
                         type="button"
@@ -230,7 +238,7 @@ export function NewWorkoutPage() {
                         className="rounded-md border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 disabled:opacity-40"
                         disabled={index === exercises.length - 1}
                       >
-                        Descer
+                        {t('create.moveDown')}
                       </button>
                       <button
                         type="button"
@@ -238,7 +246,7 @@ export function NewWorkoutPage() {
                         className="inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Remover
+                        {t('create.remove')}
                       </button>
                     </div>
                   </li>
@@ -259,14 +267,14 @@ export function NewWorkoutPage() {
               disabled={isSubmitting}
               className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmitting ? 'Salvando...' : 'Criar treino'}
+              {isSubmitting ? t('create.submitting') : t('create.submit')}
             </button>
 
             <Link
               to="/workouts"
               className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
             >
-              Voltar
+              {t('create.back')}
             </Link>
           </div>
         </form>

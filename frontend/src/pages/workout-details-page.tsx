@@ -10,6 +10,7 @@ import { ptBR } from 'date-fns/locale';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import {
   useAddWorkoutExercise,
@@ -30,6 +31,7 @@ function formatDateTime(value: string | null) {
 }
 
 export function WorkoutDetailsPage() {
+  const { t } = useTranslation('workouts');
   const { id } = useParams<{ id: string }>();
   const workoutId = id ?? '';
 
@@ -45,24 +47,24 @@ export function WorkoutDetailsPage() {
   const columns = useMemo(
     () => [
       columnHelper.accessor('orderIndex', {
-        header: 'Ordem',
+        header: t('details.columns.order'),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('exerciseName', {
-        header: 'Exercicio',
+        header: t('details.columns.exercise'),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor('bodyPartMock', {
-        header: 'Parte do corpo',
+        header: t('details.columns.bodyPart'),
         cell: (info) => info.getValue() ?? '-',
       }),
       columnHelper.accessor('notes', {
-        header: 'Observacoes',
+        header: t('details.columns.notes'),
         cell: (info) => info.getValue() ?? '-',
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Acoes',
+        header: t('details.columns.actions'),
         cell: (info) => {
           const exercise = info.row.original;
 
@@ -71,21 +73,21 @@ export function WorkoutDetailsPage() {
               <button
                 type="button"
                 onClick={async () => {
-                  const confirmed = window.confirm('Deseja remover este exercicio?');
+                  const confirmed = window.confirm(t('details.removeExerciseConfirm'));
                   if (!confirmed) return;
                   await deleteExerciseMutation.mutateAsync(String(exercise.id));
                 }}
                 className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Remover
+                {t('details.removeExercise')}
               </button>
             </div>
           );
         },
       }),
     ],
-    [deleteExerciseMutation],
+    [deleteExerciseMutation, t],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -115,10 +117,10 @@ export function WorkoutDetailsPage() {
         if (typeof message === 'string') {
           setError(message);
         } else {
-          setError('Nao foi possivel adicionar o exercicio.');
+          setError(t('details.errors.addExercise'));
         }
       } else {
-        setError('Nao foi possivel adicionar o exercicio.');
+        setError(t('details.errors.addExercise'));
       }
     }
   }
@@ -130,13 +132,13 @@ export function WorkoutDetailsPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-            Treinos
+            {t('details.badge')}
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
-            Detalhes do treino
+            {t('details.title')}
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Adicione e gerencie os exercicios feitos neste dia.
+            {t('details.subtitle')}
           </p>
         </div>
 
@@ -145,51 +147,57 @@ export function WorkoutDetailsPage() {
           className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           <ArrowLeft className="h-4 w-4" />
-          Voltar para treinos
+          {t('details.backToList')}
         </Link>
       </div>
 
       {workoutQuery.isLoading ? (
         <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-6 text-sm text-slate-600 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-          Carregando treino...
+          {t('details.loading')}
         </section>
       ) : workout ? (
         <>
           <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] sm:grid-cols-2 lg:grid-cols-4">
             <article>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Data</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {t('details.cards.date')}
+              </p>
               <p className="mt-1 text-sm font-medium text-slate-900">
                 {formatDate(workout.workoutDate)}
               </p>
             </article>
             <article>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Inicio
-              </p>
+                  {t('details.cards.start')}
+                </p>
               <p className="mt-1 text-sm font-medium text-slate-900">
                 {formatDateTime(workout.startAt)}
               </p>
             </article>
             <article>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Fim</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {t('details.cards.end')}
+              </p>
               <p className="mt-1 text-sm font-medium text-slate-900">
                 {formatDateTime(workout.endAt)}
               </p>
             </article>
             <article>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Observacoes
+                {t('details.cards.notes')}
               </p>
               <p className="mt-1 text-sm font-medium text-slate-900">{workout.notes || '-'}</p>
             </article>
           </section>
 
           <section className="mb-6 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-            <h2 className="text-lg font-semibold text-slate-900">Adicionar exercicio</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {t('details.addExerciseTitle')}
+            </h2>
             <form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={handleSubmit}>
               <label className="md:col-span-2">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Exercicio
+                  {t('details.fields.exercise')}
                 </span>
                 <input
                   type="text"
@@ -203,7 +211,7 @@ export function WorkoutDetailsPage() {
 
               <label>
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Parte do corpo
+                  {t('details.fields.bodyPart')}
                 </span>
                 <input
                   type="text"
@@ -215,7 +223,7 @@ export function WorkoutDetailsPage() {
 
               <label>
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Observacoes
+                  {t('details.fields.notes')}
                 </span>
                 <input
                   type="text"
@@ -239,8 +247,8 @@ export function WorkoutDetailsPage() {
                 >
                   <Plus className="h-4 w-4" />
                   {addExerciseMutation.isPending
-                    ? 'Adicionando...'
-                    : 'Adicionar exercicio'}
+                    ? t('details.addingExercise')
+                    : t('details.addExercise')}
                 </button>
               </div>
             </form>
@@ -283,7 +291,7 @@ export function WorkoutDetailsPage() {
                   ) : (
                     <tr>
                       <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-600">
-                        Nenhum exercicio adicionado para este treino.
+                        {t('details.noExercises')}
                       </td>
                     </tr>
                   )}
@@ -294,7 +302,7 @@ export function WorkoutDetailsPage() {
         </>
       ) : (
         <section className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          Nao foi possivel carregar este treino.
+          {t('details.loadError')}
         </section>
       )}
     </main>

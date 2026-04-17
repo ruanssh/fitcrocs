@@ -1,4 +1,5 @@
 import { CalendarRange } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type PeriodFilterProps = {
   from: string;
@@ -13,17 +14,19 @@ export function PeriodFilter({
   onChangeFrom,
   onChangeTo,
 }: PeriodFilterProps) {
+  const { t } = useTranslation('dashboard');
+
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_10px_30px_-24px_rgba(0,0,0,0.35)] backdrop-blur-sm">
       <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
         <CalendarRange className="h-4 w-4 text-emerald-600" />
-        <span>Periodo de analise</span>
+        <span>{t('periodFilter.title')}</span>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
-            De
+            {t('periodFilter.from')}
           </span>
           <input
             type="month"
@@ -35,7 +38,7 @@ export function PeriodFilter({
 
         <label className="flex flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-slate-500">
-            Ate
+            {t('periodFilter.to')}
           </span>
           <input
             type="month"

@@ -29,6 +29,12 @@ export type HeatmapDay = {
   date: string;
   count: number;
   level: number;
+  workouts: Array<{
+    id: string;
+    notes: string | null;
+    startAt: string | null;
+    endAt: string | null;
+  }>;
 };
 
 export type HeatmapResponse = {

@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useDeleteWorkout, useWorkoutsList } from '../hooks/use-workouts';
 import type { Workout } from '../types/workouts';
@@ -24,6 +25,7 @@ function formatTime(value: string | null) {
 }
 
 export function WorkoutsPage() {
+  const { t } = useTranslation(['workouts', 'common']);
   const [searchParams, setSearchParams] = useSearchParams();
   const fromDate = searchParams.get('fromDate') ?? '';
   const toDate = searchParams.get('toDate') ?? '';
@@ -42,31 +44,31 @@ export function WorkoutsPage() {
   const columns = useMemo(
     () => [
       columnHelper.accessor('workoutDate', {
-        header: 'Data',
+        header: t('workouts:list.columns.date'),
         cell: (info) => formatDate(info.getValue()),
       }),
       columnHelper.display({
         id: 'startAt',
-        header: 'Inicio',
+        header: t('workouts:list.columns.start'),
         cell: (info) => formatTime(info.row.original.startAt),
       }),
       columnHelper.display({
         id: 'endAt',
-        header: 'Fim',
+        header: t('workouts:list.columns.end'),
         cell: (info) => formatTime(info.row.original.endAt),
       }),
       columnHelper.display({
         id: 'exerciseCount',
-        header: 'Exercicios',
+        header: t('workouts:list.columns.exercises'),
         cell: (info) => info.row.original.workoutExercises.length,
       }),
       columnHelper.accessor('notes', {
-        header: 'Observacoes',
+        header: t('workouts:list.columns.notes'),
         cell: (info) => info.getValue() ?? '-',
       }),
       columnHelper.display({
         id: 'actions',
-        header: 'Acoes',
+        header: t('workouts:list.columns.actions'),
         cell: (info) => {
           const workout = info.row.original;
 
@@ -76,27 +78,27 @@ export function WorkoutsPage() {
                 to={`/workouts/${workout.id}`}
                 className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                Abrir
+                {t('workouts:list.open')}
               </Link>
 
               <button
                 type="button"
                 onClick={async () => {
-                  const confirmed = window.confirm('Deseja excluir este treino?');
+                  const confirmed = window.confirm(t('workouts:list.deleteConfirm'));
                   if (!confirmed) return;
                   await deleteWorkoutMutation.mutateAsync(String(workout.id));
                 }}
                 className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Excluir
+                {t('workouts:list.delete')}
               </button>
             </div>
           );
         },
       }),
     ],
-    [deleteWorkoutMutation],
+    [deleteWorkoutMutation, t],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -125,13 +127,13 @@ export function WorkoutsPage() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-            Treinos
+            {t('workouts:list.badge')}
           </p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
-            Gestao de treinos
+            {t('workouts:list.title')}
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Cadastre treinos e acompanhe os exercicios de cada dia em formato de datagrid.
+            {t('workouts:list.subtitle')}
           </p>
         </div>
 
@@ -140,16 +142,16 @@ export function WorkoutsPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
         >
           <Plus className="h-4 w-4" />
-          Adicionar treino
+          {t('workouts:list.addWorkout')}
         </Link>
       </div>
 
       <section className="mb-5 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              De
-            </span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {t('workouts:list.from')}
+              </span>
             <input
               type="date"
               value={fromDate}
@@ -159,9 +161,9 @@ export function WorkoutsPage() {
           </label>
 
           <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Ate
-            </span>
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                {t('workouts:list.to')}
+              </span>
             <input
               type="date"
               value={toDate}
@@ -173,7 +175,7 @@ export function WorkoutsPage() {
           <div className="flex items-end">
             <div className="inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
               <Search className="h-4 w-4" />
-              <span>{workoutsQuery.data?.length ?? 0} treino(s) listado(s)</span>
+              <span>{t('workouts:list.listedCount', { count: workoutsQuery.data?.length ?? 0 })}</span>
             </div>
           </div>
         </div>
@@ -206,7 +208,7 @@ export function WorkoutsPage() {
               {workoutsQuery.isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-600">
-                    Carregando treinos...
+                    {t('workouts:list.loading')}
                   </td>
                 </tr>
               ) : workoutsQuery.data?.length ? (
@@ -225,7 +227,7 @@ export function WorkoutsPage() {
               ) : (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-600">
-                    Nenhum treino encontrado para o filtro atual.
+                    {t('workouts:list.empty')}
                   </td>
                 </tr>
               )}

@@ -8,6 +8,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import type { TopExercisesItem } from '../../types/dashboard';
 
 type TopExercisesPanelProps = {
@@ -18,14 +19,16 @@ type TopExercisesPanelProps = {
 const BAR_COLORS = ['#1f8f78', '#34a68f', '#4fbea7', '#78d7be', '#9de8d5'];
 
 export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) {
+  const { t } = useTranslation('dashboard');
+
   return (
     <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-sm">
       <header className="mb-4">
         <h2 className="text-lg font-semibold tracking-tight text-slate-900">
-          Exercicios mais frequentes
+          {t('topExercises.title')}
         </h2>
         <p className="mt-1 text-sm text-slate-600">
-          Ranking com base nos exercicios registrados no periodo selecionado.
+          {t('topExercises.subtitle')}
         </p>
       </header>
 
@@ -33,7 +36,7 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
         <div className="h-72 animate-pulse rounded-xl bg-slate-100" />
       ) : items.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-600">
-          Ainda nao existem exercicios registrados para este periodo.
+          {t('topExercises.empty')}
         </div>
       ) : (
         <>
@@ -76,7 +79,10 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
               >
                 <span className="text-sm font-medium text-slate-700">{item.exerciseName}</span>
                 <span className="text-sm text-slate-600">
-                  {item.count} registro(s) · {item.percentage.toFixed(2)}%
+                  {t('topExercises.listItem', {
+                    count: item.count,
+                    percentage: item.percentage.toFixed(2),
+                  })}
                 </span>
               </li>
             ))}

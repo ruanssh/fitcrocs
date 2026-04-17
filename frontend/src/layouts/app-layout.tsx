@@ -1,4 +1,5 @@
 import { BarChart3, ClipboardList, LogOut } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/use-auth';
 
@@ -11,6 +12,7 @@ function navClassName(isActive: boolean) {
 }
 
 export function AppLayout() {
+  const { t } = useTranslation('common');
   const { user, logout } = useAuth();
 
   return (
@@ -22,25 +24,25 @@ export function AppLayout() {
           <div className="flex items-center gap-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
-                Fitcrocs
+                {t('brand')}
               </p>
             </div>
 
             <nav className="flex items-center gap-1">
               <NavLink to="/dashboard" className={({ isActive }) => navClassName(isActive)}>
                 <BarChart3 className="h-4 w-4" />
-                Dashboard
+                {t('dashboard')}
               </NavLink>
               <NavLink to="/workouts" className={({ isActive }) => navClassName(isActive)}>
                 <ClipboardList className="h-4 w-4" />
-                Treinos
+                {t('workouts')}
               </NavLink>
             </nav>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-right shadow-sm sm:block">
-              <p className="text-xs uppercase tracking-wide text-slate-500">Usuario</p>
+              <p className="text-xs uppercase tracking-wide text-slate-500">{t('user')}</p>
               <p className="text-sm font-medium text-slate-800">{user?.name ?? '-'}</p>
             </div>
 
@@ -50,7 +52,7 @@ export function AppLayout() {
               className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
               <LogOut className="h-4 w-4" />
-              Sair
+              {t('logout')}
             </button>
           </div>
         </div>

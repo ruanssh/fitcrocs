@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/use-auth';
 
 export function RegisterPage() {
+  const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const location = useLocation();
   const { register, isAuthenticated } = useAuth();
@@ -30,7 +32,7 @@ export function RegisterPage() {
     setError(null);
 
     if (password !== confirmPassword) {
-      setError('A confirmacao da senha nao confere.');
+      setError(t('auth:register.passwordMismatch'));
       return;
     }
 
@@ -47,10 +49,10 @@ export function RegisterPage() {
         } else if (Array.isArray(message) && message.length > 0) {
           setError(String(message[0]));
         } else {
-          setError('Nao foi possivel criar sua conta agora.');
+          setError(t('auth:register.genericError'));
         }
       } else {
-        setError('Nao foi possivel criar sua conta agora.');
+        setError(t('auth:register.genericError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -63,18 +65,20 @@ export function RegisterPage() {
 
       <section className="w-full max-w-md rounded-3xl border border-white/60 bg-white/92 p-8 shadow-[0_30px_80px_-35px_rgba(15,23,42,0.45)] backdrop-blur-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
-          Fitcrocs
+          {t('common:brand')}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
-          Criar nova conta
+          {t('auth:register.title')}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Cadastre seu perfil para registrar treinos e acompanhar sua evolucao.
+          {t('auth:register.subtitle')}
         </p>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Nome</span>
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('auth:register.name')}
+            </span>
             <input
               type="text"
               value={name}
@@ -87,7 +91,9 @@ export function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Email</span>
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('auth:register.email')}
+            </span>
             <input
               type="email"
               value={email}
@@ -99,7 +105,9 @@ export function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Senha</span>
+            <span className="mb-1.5 block text-sm font-medium text-slate-700">
+              {t('auth:register.password')}
+            </span>
             <input
               type="password"
               value={password}
@@ -112,9 +120,9 @@ export function RegisterPage() {
           </label>
 
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">
-              Confirmar senha
-            </span>
+              <span className="mb-1.5 block text-sm font-medium text-slate-700">
+                {t('auth:register.confirmPassword')}
+              </span>
             <input
               type="password"
               value={confirmPassword}
@@ -137,14 +145,14 @@ export function RegisterPage() {
             disabled={isSubmitting}
             className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? 'Criando conta...' : 'Criar conta'}
+            {isSubmitting ? t('auth:register.submitting') : t('auth:register.submit')}
           </button>
         </form>
 
         <p className="mt-5 text-sm text-slate-600">
-          Ja tem conta?{' '}
+          {t('auth:register.hasAccount')}{' '}
           <Link className="font-semibold text-emerald-700 hover:text-emerald-800" to="/login">
-            Entrar
+            {t('auth:register.signIn')}
           </Link>
         </p>
       </section>
