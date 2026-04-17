@@ -1,0 +1,48 @@
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  Object.defineProperty(BigInt.prototype, 'toJSON', {
+    value: function toJSON(this: bigint) {
+      return this.toString();
+    },
+    configurable: true,
+  });
+
+  const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('FITCROCS API')
+    .setDescription('API para gerenciamento de treinos diarios')
+    .setVersion('1.0.0')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'jwt',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document);
+
+  const configService = app.get(ConfigService);
+  const port = Number(configService.get('PORT') ?? 3000);
+
+  await app.listen(port);
+}
+void bootstrap();
