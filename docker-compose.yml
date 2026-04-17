@@ -1,4 +1,5 @@
 services:
+services:
   backend:
     env_file:
       - .env
@@ -9,19 +10,19 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: ${PORT:-3000}
+      PORT: 3001
     ports:
-      - '3000:3000'
+      - '3001:3001'
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:3000}
+        VITE_API_BASE_URL: https://backend-fitcrocs.artixlab.online
     container_name: fitcrocs-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - '5173:5173'
+      - '4174:5173'
