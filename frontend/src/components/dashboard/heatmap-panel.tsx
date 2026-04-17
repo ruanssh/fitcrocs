@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { cloneElement, useMemo, useState } from 'react';
+import { cloneElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityCalendar, type Activity } from 'react-activity-calendar';
 import type { HeatmapDay } from '../../types/dashboard';
@@ -24,6 +24,7 @@ function toActivities(days: HeatmapDay[]): Activity[] {
 export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
   const { t } = useTranslation('dashboard');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isCompact, setIsCompact] = useState(false);
   const activities = toActivities(days);
   const dayByDate = useMemo(() => new Map(days.map((day) => [day.date, day])), [days]);
 
@@ -47,8 +48,21 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
     });
   }
 
+  useEffect(() => {
+    function syncViewport() {
+      setIsCompact(window.innerWidth < 640);
+    }
+
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+
+    return () => {
+      window.removeEventListener('resize', syncViewport);
+    };
+  }, []);
+
   return (
-    <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+    <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-5">
       <header className="mb-4">
         <h2 className="text-lg font-semibold tracking-tight text-slate-900">
           {t('heatmap.title')}
@@ -58,6 +72,10 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
         </p>
       </header>
 
+      <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-500 sm:hidden">
+        Arraste para o lado para ver todos os meses e toque em um dia para abrir os detalhes.
+      </div>
+
       <div className="overflow-x-auto pb-1">
         <ActivityCalendar
           data={activities}
@@ -65,9 +83,9 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
           theme={theme}
           colorScheme="light"
           maxLevel={4}
-          blockSize={15}
-          blockMargin={4}
-          fontSize={13}
+          blockSize={isCompact ? 11 : 15}
+          blockMargin={isCompact ? 3 : 4}
+          fontSize={isCompact ? 10 : 13}
           labels={{
             totalCount: t('heatmap.totalCount'),
           }}
@@ -86,19 +104,19 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
               className: 'cursor-pointer',
             })
           }
-          showWeekdayLabels
+          showWeekdayLabels={!isCompact}
           weekStart={1}
         />
       </div>
 
       {selectedDay ? (
-        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t('heatmap.detailsTitle')}
               </p>
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-sm font-semibold leading-6 text-slate-900">
                 {t('heatmap.detailsHeading', {
                   date: formatDateLabel(selectedDay.date),
                   count: selectedDay.count,
@@ -122,7 +140,7 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
               {selectedDay.workouts.map((workout) => (
                 <li
                   key={workout.id}
-                  className="rounded-lg border border-slate-200 bg-white px-3 py-2"
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-3"
                 >
                   <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                     {t('heatmap.workoutTime', {
@@ -130,7 +148,7 @@ export function HeatmapPanel({ days, isLoading }: HeatmapPanelProps) {
                       end: formatTimeLabel(workout.endAt),
                     })}
                   </p>
-                  <p className="mt-1 text-sm text-slate-700">
+                  <p className="mt-1 text-sm leading-6 text-slate-700">
                     {workout.notes?.trim() || t('heatmap.noNotes')}
                   </p>
                 </li>

@@ -123,23 +123,23 @@ export function WorkoutsPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
             {t('workouts:list.badge')}
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             {t('workouts:list.title')}
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-slate-600">
             {t('workouts:list.subtitle')}
           </p>
         </div>
 
         <Link
           to="/workouts/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto sm:justify-start sm:py-2.5"
         >
           <Plus className="h-4 w-4" />
           {t('workouts:list.addWorkout')}
@@ -149,9 +149,9 @@ export function WorkoutsPage() {
       <section className="mb-5 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                {t('workouts:list.from')}
-              </span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t('workouts:list.from')}
+            </span>
             <input
               type="date"
               value={fromDate}
@@ -161,9 +161,9 @@ export function WorkoutsPage() {
           </label>
 
           <label className="flex flex-col gap-1.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                {t('workouts:list.to')}
-              </span>
+            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {t('workouts:list.to')}
+            </span>
             <input
               type="date"
               value={toDate}
@@ -181,59 +181,127 @@ export function WorkoutsPage() {
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200">
-            <thead className="bg-slate-50">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
+      <section className="rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
+        {workoutsQuery.isLoading ? (
+          <div className="px-4 py-8 text-center text-sm text-slate-600">
+            {t('workouts:list.loading')}
+          </div>
+        ) : workoutsQuery.data?.length ? (
+          <>
+            <div className="space-y-3 p-3 sm:hidden">
+              {table.getRowModel().rows.map((row) => {
+                const workout = row.original;
 
-            <tbody className="divide-y divide-slate-100 bg-white">
-              {workoutsQuery.isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-600">
-                    {t('workouts:list.loading')}
-                  </td>
-                </tr>
-              ) : workoutsQuery.data?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="transition hover:bg-slate-50/80">
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="px-4 py-3 align-middle text-sm text-slate-700"
+                return (
+                  <article
+                    key={row.id}
+                    className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                          {formatDate(workout.workoutDate)}
+                        </p>
+                        <h2 className="mt-2 text-base font-semibold text-slate-900">
+                          {t('workouts:list.columns.exercises')}: {workout.workoutExercises.length}
+                        </h2>
+                      </div>
+                      <Link
+                        to={`/workouts/${workout.id}`}
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sm text-slate-600">
-                    {t('workouts:list.empty')}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                        {t('workouts:list.open')}
+                      </Link>
+                    </div>
+
+                    <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                      <div className="rounded-xl bg-white px-3 py-2.5">
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {t('workouts:list.columns.start')}
+                        </dt>
+                        <dd className="mt-1 font-medium text-slate-900">{formatTime(workout.startAt)}</dd>
+                      </div>
+                      <div className="rounded-xl bg-white px-3 py-2.5">
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          {t('workouts:list.columns.end')}
+                        </dt>
+                        <dd className="mt-1 font-medium text-slate-900">{formatTime(workout.endAt)}</dd>
+                      </div>
+                    </dl>
+
+                    <div className="mt-3 rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        {t('workouts:list.columns.notes')}
+                      </p>
+                      <p className="mt-1 leading-6">{workout.notes || '-'}</p>
+                    </div>
+
+                    <div className="mt-4 flex gap-2">
+                      <Link
+                        to={`/workouts/${workout.id}`}
+                        className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700"
+                      >
+                        {t('workouts:list.open')}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const confirmed = window.confirm(t('workouts:list.deleteConfirm'));
+                          if (!confirmed) return;
+                          await deleteWorkoutMutation.mutateAsync(String(workout.id));
+                        }}
+                        className="inline-flex items-center justify-center rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {table.getRowModel().rows.map((row) => (
+                    <tr key={row.id} className="transition hover:bg-slate-50/80">
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className="px-4 py-3 align-middle text-sm text-slate-700"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ) : (
+          <div className="px-4 py-8 text-center text-sm text-slate-600">{t('workouts:list.empty')}</div>
+        )}
       </section>
     </main>
   );

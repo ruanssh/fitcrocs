@@ -128,23 +128,23 @@ export function WorkoutDetailsPage() {
   const workout = workoutQuery.data;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
+    <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
             {t('details.badge')}
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
             {t('details.title')}
           </h1>
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm leading-6 text-slate-600">
             {t('details.subtitle')}
           </p>
         </div>
 
         <Link
           to="/workouts"
-          className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:w-auto sm:justify-start sm:py-2"
         >
           <ArrowLeft className="h-4 w-4" />
           {t('details.backToList')}
@@ -158,35 +158,35 @@ export function WorkoutDetailsPage() {
       ) : workout ? (
         <>
           <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] sm:grid-cols-2 lg:grid-cols-4">
-            <article>
+            <article className="rounded-xl bg-slate-50 px-3 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t('details.cards.date')}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-900">
+              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
                 {formatDate(workout.workoutDate)}
               </p>
             </article>
-            <article>
+            <article className="rounded-xl bg-slate-50 px-3 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {t('details.cards.start')}
-                </p>
-              <p className="mt-1 text-sm font-medium text-slate-900">
+                {t('details.cards.start')}
+              </p>
+              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
                 {formatDateTime(workout.startAt)}
               </p>
             </article>
-            <article>
+            <article className="rounded-xl bg-slate-50 px-3 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t('details.cards.end')}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-900">
+              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
                 {formatDateTime(workout.endAt)}
               </p>
             </article>
-            <article>
+            <article className="rounded-xl bg-slate-50 px-3 py-3 sm:col-span-2 lg:col-span-1">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {t('details.cards.notes')}
               </p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{workout.notes || '-'}</p>
+              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">{workout.notes || '-'}</p>
             </article>
           </section>
 
@@ -243,7 +243,7 @@ export function WorkoutDetailsPage() {
                 <button
                   type="submit"
                   disabled={addExerciseMutation.isPending}
-                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:py-2.5"
                 >
                   <Plus className="h-4 w-4" />
                   {addExerciseMutation.isPending
@@ -255,49 +255,95 @@ export function WorkoutDetailsPage() {
           </section>
 
           <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <th
-                          key={header.id}
-                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+            {workout.workoutExercises.length ? (
+              <>
+                <div className="space-y-3 p-3 sm:hidden">
+                  {workout.workoutExercises.map((exercise) => (
+                    <article
+                      key={exercise.id}
+                      className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                            {t('details.columns.order')} {exercise.orderIndex}
+                          </p>
+                          <h2 className="mt-2 text-base font-semibold text-slate-900">
+                            {exercise.exerciseName}
+                          </h2>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const confirmed = window.confirm(t('details.removeExerciseConfirm'));
+                            if (!confirmed) return;
+                            await deleteExerciseMutation.mutateAsync(String(exercise.id));
+                          }}
+                          className="inline-flex items-center justify-center rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                         >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
-                  {workout.workoutExercises.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <tr key={row.id} className="transition hover:bg-slate-50/80">
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} className="px-4 py-3 text-sm text-slate-700">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-600">
-                        {t('details.noExercises')}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                      <div className="mt-4 grid gap-3">
+                        <div className="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            {t('details.columns.bodyPart')}
+                          </p>
+                          <p className="mt-1 leading-6">{exercise.bodyPartMock || '-'}</p>
+                        </div>
+                        <div className="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            {t('details.columns.notes')}
+                          </p>
+                          <p className="mt-1 leading-6">{exercise.notes || '-'}</p>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="hidden overflow-x-auto sm:block">
+                  <table className="min-w-full divide-y divide-slate-200">
+                    <thead className="bg-slate-50">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => (
+                            <th
+                              key={header.id}
+                              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+                            >
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                            </th>
+                          ))}
+                        </tr>
+                      ))}
+                    </thead>
+
+                    <tbody className="divide-y divide-slate-100 bg-white">
+                      {table.getRowModel().rows.map((row) => (
+                        <tr key={row.id} className="transition hover:bg-slate-50/80">
+                          {row.getVisibleCells().map((cell) => (
+                            <td key={cell.id} className="px-4 py-3 text-sm text-slate-700">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : (
+              <div className="px-4 py-8 text-center text-sm text-slate-600">
+                {t('details.noExercises')}
+              </div>
+            )}
           </section>
         </>
       ) : (

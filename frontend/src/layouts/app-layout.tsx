@@ -55,19 +55,19 @@ export function AppLayout() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-slate-100">
+    <div className="relative min-h-screen bg-slate-100 pb-20 md:pb-0">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.14),transparent_44%),linear-gradient(180deg,#f6faf9_0%,#edf4f2_100%)]" />
 
       <header className="sticky top-0 z-30 border-b border-white/60 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-8">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3 md:gap-8">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
                 {t('brand')}
               </p>
             </div>
 
-            <nav className="flex items-center gap-1">
+            <nav className="hidden items-center gap-1 md:flex">
               <NavLink to="/dashboard" className={({ isActive }) => navClassName(isActive)}>
                 <BarChart3 className="h-4 w-4" />
                 {t('dashboard')}
@@ -86,7 +86,7 @@ export function AppLayout() {
               aria-expanded={isUserMenuOpen}
               aria-label={t('menu.openUserMenu')}
               onClick={() => setIsUserMenuOpen((current) => !current)}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-2 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 sm:px-2.5"
             >
               {user?.photoBase64 ? (
                 <img
@@ -146,6 +146,33 @@ export function AppLayout() {
       </header>
 
       <Outlet />
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200/80 bg-white/95 px-4 py-3 backdrop-blur-xl md:hidden">
+        <div className="mx-auto flex max-w-md items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/90 p-1.5 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.4)]">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              isActive
+                ? 'flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-3 py-3 text-sm font-semibold text-white'
+                : 'flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-slate-900'
+            }
+          >
+            <BarChart3 className="h-4 w-4" />
+            <span>{t('dashboard')}</span>
+          </NavLink>
+          <NavLink
+            to="/workouts"
+            className={({ isActive }) =>
+              isActive
+                ? 'flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-emerald-500 px-3 py-3 text-sm font-semibold text-white'
+                : 'flex min-w-0 flex-1 items-center justify-center gap-2 rounded-xl px-3 py-3 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-slate-900'
+            }
+          >
+            <ClipboardList className="h-4 w-4" />
+            <span>{t('workouts')}</span>
+          </NavLink>
+        </div>
+      </nav>
     </div>
   );
 }
