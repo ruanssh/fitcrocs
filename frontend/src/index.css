@@ -1,30 +1,70 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap');
+@layer theme, base, mui, components, utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root {
-  font-family: 'Instrument Sans', 'Segoe UI', sans-serif;
+  --amber: #ffa133;
+  --pumpkin: #e47b1a;
+  --flux: #c8be50;
+  --foam: #bccabb;
+  --enamel: #eeeeee;
+  --cement: #c0c0c0;
+  --aluminum: #cccccc;
+  --ash: #8e8e8e;
+  --smoke: #666666;
+  --dark: #444444;
+  --soot: #333333;
+  --carbon: #222222;
+  --surface: #1a1a1a;
+  --ink: #0a0a0a;
+
+  --heat-0: #2c2c2c;
+  --heat-1: #6e4d22;
+  --heat-2: #9e6725;
+  --heat-3: #ce852c;
+  --heat-4: #ffa133;
+
+  color-scheme: dark;
+  font-family: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #0f172a;
-  background-color: #f2f7f5;
+  color: var(--cement);
+  background-color: var(--carbon);
+}
+
+@theme inline {
+  --color-amber: var(--amber);
+  --color-pumpkin: var(--pumpkin);
+  --color-flux: var(--flux);
+  --color-foam: var(--foam);
+  --color-enamel: var(--enamel);
+  --color-cement: var(--cement);
+  --color-ash: var(--ash);
+  --color-smoke: var(--smoke);
+  --color-soot: var(--soot);
+  --color-carbon: var(--carbon);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --font-sans: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 
 * {
   box-sizing: border-box;
 }
 
+::selection {
+  background: var(--amber);
+  color: var(--ink);
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: 'Sora', 'Instrument Sans', sans-serif;
+  scrollbar-color: var(--dark) var(--carbon);
 }
 
 #root {

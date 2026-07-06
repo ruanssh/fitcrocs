@@ -1,11 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FitCrocs favicon">
-  <defs>
-    <linearGradient id="fitcrocs-bg" x1="10" x2="54" y1="8" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#7c3aed"/>
-      <stop offset="1" stop-color="#22c55e"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="18" fill="#0f172a"/>
-  <path fill="url(#fitcrocs-bg)" d="M16 18.5C16 15.462 18.462 13 21.5 13h21C45.538 13 48 15.462 48 18.5S45.538 24 42.5 24H27v7h12.5c3.038 0 5.5 2.462 5.5 5.5S42.538 42 39.5 42H27v9c0 3.038-2.462 5.5-5.5 5.5S16 54.038 16 51V18.5Z"/>
-  <path fill="#f8fafc" d="M29.25 21a3.25 3.25 0 0 1 3.25-3.25h7.75a3.25 3.25 0 1 1 0 6.5H32.5A3.25 3.25 0 0 1 29.25 21Zm0 21.75a3.25 3.25 0 0 1 3.25-3.25h5.25a3.25 3.25 0 1 1 0 6.5H32.5a3.25 3.25 0 0 1-3.25-3.25Z"/>
+  <rect width="64" height="64" fill="#0a0a0a"/>
+  <rect x="4" y="4" width="56" height="56" fill="none" stroke="#333333" stroke-width="2"/>
+  <text x="12" y="44" font-family="monospace" font-size="34" font-weight="700" fill="#ffa133">&gt;F</text>
 </svg>

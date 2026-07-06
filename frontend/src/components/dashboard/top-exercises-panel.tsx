@@ -1,8 +1,10 @@
+import Paper from '@mui/material/Paper';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -10,6 +12,7 @@ import {
 } from 'recharts';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { BAR_COLOR } from '../../theme/chart-colors';
 import type { TopExercisesItem } from '../../types/dashboard';
 
 type TopExercisesPanelProps = {
@@ -17,7 +20,7 @@ type TopExercisesPanelProps = {
   isLoading: boolean;
 };
 
-const BAR_COLORS = ['#1f8f78', '#34a68f', '#4fbea7', '#78d7be', '#9de8d5'];
+const mono = "'IBM Plex Mono', ui-monospace, monospace";
 
 export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) {
   const { t } = useTranslation('dashboard');
@@ -39,20 +42,20 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
   const visibleItems = isCompact ? items.slice(0, 5) : items;
 
   return (
-    <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-5">
+    <Paper component="section" className="p-4 sm:p-5">
       <header className="mb-4">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+        <Typography variant="h6" component="h2" sx={{ color: 'var(--enamel)' }}>
           {t('topExercises.title')}
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
           {t('topExercises.subtitle')}
-        </p>
+        </Typography>
       </header>
 
       {isLoading ? (
-        <div className="h-72 animate-pulse rounded-xl bg-slate-100" />
+        <Skeleton variant="rectangular" height={288} />
       ) : items.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-600">
+        <div className="border border-dashed border-soot px-4 py-8 text-center text-sm text-ash">
           {t('topExercises.empty')}
         </div>
       ) : (
@@ -60,30 +63,32 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
           <div className="hidden h-72 sm:block">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={visibleItems} layout="vertical" margin={{ left: 0, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                <XAxis
+                  type="number"
+                  tick={{ fill: '#8e8e8e', fontSize: 12, fontFamily: mono }}
+                  stroke="#333333"
+                />
                 <YAxis
                   type="category"
                   dataKey="exerciseName"
-                  tick={{ fill: '#334155', fontSize: 12 }}
+                  tick={{ fill: '#c0c0c0', fontSize: 12, fontFamily: mono }}
+                  stroke="#333333"
                   width={120}
                 />
                 <Tooltip
-                  cursor={{ fill: '#f1f5f9' }}
+                  cursor={{ fill: 'rgba(255, 161, 51, 0.06)' }}
                   contentStyle={{
-                    borderRadius: '12px',
-                    borderColor: '#cbd5e1',
+                    background: '#1a1a1a',
+                    border: '1px solid #333333',
+                    borderRadius: 0,
+                    fontFamily: mono,
                     fontSize: '12px',
                   }}
+                  labelStyle={{ color: '#eeeeee' }}
+                  itemStyle={{ color: BAR_COLOR }}
                 />
-                <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-                  {visibleItems.map((item, index) => (
-                    <Cell
-                      key={`${item.exerciseName}-${index}`}
-                      fill={BAR_COLORS[index % BAR_COLORS.length]}
-                    />
-                  ))}
-                </Bar>
+                <Bar dataKey="count" fill={BAR_COLOR} radius={[0, 0, 0, 0]} maxBarSize={18} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -92,10 +97,10 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
             {visibleItems.map((item) => (
               <li
                 key={item.exerciseName}
-                className="rounded-lg bg-slate-50 px-3 py-3"
+                className="border border-soot bg-carbon px-3 py-3"
               >
-                <p className="text-sm font-medium text-slate-700">{item.exerciseName}</p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="text-sm font-medium text-cement">{item.exerciseName}</p>
+                <p className="mt-1 text-sm text-ash">
                   {t('topExercises.listItem', {
                     count: item.count,
                     percentage: item.percentage.toFixed(2),
@@ -106,6 +111,6 @@ export function TopExercisesPanel({ items, isLoading }: TopExercisesPanelProps) 
           </ul>
         </>
       )}
-    </section>
+    </Paper>
   );
 }

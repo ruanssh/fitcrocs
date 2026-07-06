@@ -1,3 +1,12 @@
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import {
   createColumnHelper,
   flexRender,
@@ -9,7 +18,8 @@ import { ptBR } from 'date-fns/locale';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import { Field } from '../components/ui/form-field';
 import { useDeleteWorkout, useWorkoutsList } from '../hooks/use-workouts';
 import type { Workout } from '../types/workouts';
 
@@ -74,25 +84,26 @@ export function WorkoutsPage() {
 
           return (
             <div className="flex items-center justify-end gap-2">
-              <Link
+              <Button
+                component={RouterLink}
                 to={`/workouts/${workout.id}`}
-                className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                size="small"
               >
                 {t('workouts:list.open')}
-              </Link>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                size="small"
+                color="error"
+                startIcon={<Trash2 className="h-3.5 w-3.5" />}
                 onClick={async () => {
                   const confirmed = window.confirm(t('workouts:list.deleteConfirm'));
                   if (!confirmed) return;
                   await deleteWorkoutMutation.mutateAsync(String(workout.id));
                 }}
-                className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
               >
-                <Trash2 className="h-3.5 w-3.5" />
                 {t('workouts:list.delete')}
-              </button>
+              </Button>
             </div>
           );
         },
@@ -126,66 +137,58 @@ export function WorkoutsPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+          <Typography variant="overline" color="primary" component="p">
             {t('workouts:list.badge')}
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          </Typography>
+          <Typography variant="h4" component="h1" sx={{ mt: 1, color: 'var(--enamel)' }}>
             {t('workouts:list.title')}
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {t('workouts:list.subtitle')}
-          </p>
+          </Typography>
         </div>
 
-        <Link
+        <Button
+          component={RouterLink}
           to="/workouts/new"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto sm:justify-start sm:py-2.5"
+          variant="contained"
+          startIcon={<Plus className="h-4 w-4" />}
+          className="w-full sm:w-auto"
         >
-          <Plus className="h-4 w-4" />
           {t('workouts:list.addWorkout')}
-        </Link>
+        </Button>
       </div>
 
-      <section className="mb-5 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
+      <Paper className="mb-5 p-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t('workouts:list.from')}
-            </span>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(event) => updateFilter('fromDate', event.target.value)}
-              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-500 transition focus:bg-white focus:ring-2"
-            />
-          </label>
+          <Field
+            label={t('workouts:list.from')}
+            type="date"
+            value={fromDate}
+            onChange={(event) => updateFilter('fromDate', event.target.value)}
+          />
 
-          <label className="flex flex-col gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              {t('workouts:list.to')}
-            </span>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(event) => updateFilter('toDate', event.target.value)}
-              className="rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-800 outline-none ring-emerald-500 transition focus:bg-white focus:ring-2"
-            />
-          </label>
+          <Field
+            label={t('workouts:list.to')}
+            type="date"
+            value={toDate}
+            onChange={(event) => updateFilter('toDate', event.target.value)}
+          />
 
           <div className="flex items-end">
-            <div className="inline-flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+            <div className="flex w-full items-center gap-2 border border-soot px-3 py-2 text-sm text-ash">
               <Search className="h-4 w-4" />
               <span>{t('workouts:list.listedCount', { count: workoutsQuery.data?.length ?? 0 })}</span>
             </div>
           </div>
         </div>
-      </section>
+      </Paper>
 
-      <section className="rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
+      <Paper>
         {workoutsQuery.isLoading ? (
-          <div className="px-4 py-8 text-center text-sm text-slate-600">
+          <Typography variant="body2" color="text.secondary" className="px-4 py-8 text-center">
             {t('workouts:list.loading')}
-          </div>
+          </Typography>
         ) : workoutsQuery.data?.length ? (
           <>
             <div className="space-y-3 p-3 sm:hidden">
@@ -193,116 +196,110 @@ export function WorkoutsPage() {
                 const workout = row.original;
 
                 return (
-                  <article
-                    key={row.id}
-                    className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"
-                  >
+                  <article key={row.id} className="border border-soot p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                        <Typography variant="overline" color="primary" component="p">
                           {formatDate(workout.workoutDate)}
-                        </p>
-                        <h2 className="mt-2 text-base font-semibold text-slate-900">
+                        </Typography>
+                        <Typography variant="body1" sx={{ mt: 1, fontWeight: 600, color: 'var(--enamel)' }}>
                           {t('workouts:list.columns.exercises')}: {workout.workoutExercises.length}
-                        </h2>
+                        </Typography>
                       </div>
-                      <Link
+                      <Button
+                        component={RouterLink}
                         to={`/workouts/${workout.id}`}
-                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
+                        size="small"
                       >
                         {t('workouts:list.open')}
-                      </Link>
+                      </Button>
                     </div>
 
                     <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                      <div className="rounded-xl bg-white px-3 py-2.5">
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <div className="border border-soot px-3 py-2.5">
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-ash">
                           {t('workouts:list.columns.start')}
                         </dt>
-                        <dd className="mt-1 font-medium text-slate-900">{formatTime(workout.startAt)}</dd>
+                        <dd className="mt-1 font-medium text-cement">{formatTime(workout.startAt)}</dd>
                       </div>
-                      <div className="rounded-xl bg-white px-3 py-2.5">
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <div className="border border-soot px-3 py-2.5">
+                        <dt className="text-xs font-semibold uppercase tracking-wide text-ash">
                           {t('workouts:list.columns.end')}
                         </dt>
-                        <dd className="mt-1 font-medium text-slate-900">{formatTime(workout.endAt)}</dd>
+                        <dd className="mt-1 font-medium text-cement">{formatTime(workout.endAt)}</dd>
                       </div>
                     </dl>
 
-                    <div className="mt-3 rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <div className="mt-3 border border-soot px-3 py-3 text-sm text-cement">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                         {t('workouts:list.columns.notes')}
                       </p>
                       <p className="mt-1 leading-6">{workout.notes || '-'}</p>
                     </div>
 
                     <div className="mt-4 flex gap-2">
-                      <Link
+                      <Button
+                        component={RouterLink}
                         to={`/workouts/${workout.id}`}
-                        className="inline-flex flex-1 items-center justify-center rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700"
+                        className="flex-1"
                       >
                         {t('workouts:list.open')}
-                      </Link>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        color="error"
                         onClick={async () => {
                           const confirmed = window.confirm(t('workouts:list.deleteConfirm'));
                           if (!confirmed) return;
                           await deleteWorkoutMutation.mutateAsync(String(workout.id));
                         }}
-                        className="inline-flex items-center justify-center rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                       >
                         <Trash2 className="h-4 w-4" />
-                      </button>
+                      </Button>
                     </div>
                   </article>
                 );
               })}
             </div>
 
-            <div className="hidden overflow-x-auto sm:block">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
+            <TableContainer className="hidden sm:block">
+              <Table>
+                <TableHead>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
+                    <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <th
-                          key={header.id}
-                          className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-                        >
+                        <TableCell key={header.id}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
                                 header.getContext(),
                               )}
-                        </th>
+                        </TableCell>
                       ))}
-                    </tr>
+                    </TableRow>
                   ))}
-                </thead>
+                </TableHead>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <TableBody>
                   {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className="transition hover:bg-slate-50/80">
+                    <TableRow key={row.id} hover>
                       {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="px-4 py-3 align-middle text-sm text-slate-700"
-                        >
+                        <TableCell key={cell.id}>
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
+                        </TableCell>
                       ))}
-                    </tr>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </TableBody>
+              </Table>
+            </TableContainer>
           </>
         ) : (
-          <div className="px-4 py-8 text-center text-sm text-slate-600">{t('workouts:list.empty')}</div>
+          <Typography variant="body2" color="text.secondary" className="px-4 py-8 text-center">
+            {t('workouts:list.empty')}
+          </Typography>
         )}
-      </section>
+      </Paper>
     </main>
   );
 }

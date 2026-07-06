@@ -8,8 +8,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <div className="rounded-2xl border border-slate-200 bg-white px-6 py-4 text-sm font-medium text-slate-700 shadow-sm">
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="border border-soot bg-surface px-6 py-4 text-sm font-medium uppercase tracking-wide text-ash">
           {t('protectedRoute.loadingSession')}
         </div>
       </div>

@@ -1,3 +1,13 @@
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import {
   createColumnHelper,
   flexRender,
@@ -11,7 +21,8 @@ import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Field } from '../components/ui/form-field';
 import {
   useAddWorkoutExercise,
   useDeleteWorkoutExercise,
@@ -70,18 +81,18 @@ export function WorkoutDetailsPage() {
 
           return (
             <div className="flex justify-end">
-              <button
-                type="button"
+              <Button
+                size="small"
+                color="error"
+                startIcon={<Trash2 className="h-3.5 w-3.5" />}
                 onClick={async () => {
                   const confirmed = window.confirm(t('details.removeExerciseConfirm'));
                   if (!confirmed) return;
                   await deleteExerciseMutation.mutateAsync(String(exercise.id));
                 }}
-                className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50"
               >
-                <Trash2 className="h-3.5 w-3.5" />
                 {t('details.removeExercise')}
-              </button>
+              </Button>
             </div>
           );
         },
@@ -131,169 +142,158 @@ export function WorkoutDetailsPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
         <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+          <Typography variant="overline" color="primary" component="p">
             {t('details.badge')}
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+          </Typography>
+          <Typography variant="h4" component="h1" sx={{ mt: 1, color: 'var(--enamel)' }}>
             {t('details.title')}
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
             {t('details.subtitle')}
-          </p>
+          </Typography>
         </div>
 
-        <Link
+        <Button
+          component={RouterLink}
           to="/workouts"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:w-auto sm:justify-start sm:py-2"
+          startIcon={<ArrowLeft className="h-4 w-4" />}
+          className="w-full sm:w-auto"
         >
-          <ArrowLeft className="h-4 w-4" />
           {t('details.backToList')}
-        </Link>
+        </Button>
       </div>
 
       {workoutQuery.isLoading ? (
-        <section className="rounded-2xl border border-slate-200/80 bg-white/95 p-6 text-sm text-slate-600 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-          {t('details.loading')}
-        </section>
+        <Paper className="p-6">
+          <Typography variant="body2" color="text.secondary">
+            {t('details.loading')}
+          </Typography>
+        </Paper>
       ) : workout ? (
         <>
-          <section className="mb-6 grid gap-3 rounded-2xl border border-slate-200/80 bg-white/95 p-4 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] sm:grid-cols-2 lg:grid-cols-4">
-            <article className="rounded-xl bg-slate-50 px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <Paper className="mb-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+            <article className="border border-soot px-3 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                 {t('details.cards.date')}
               </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
+              <p className="mt-1 text-sm font-medium leading-6 text-cement">
                 {formatDate(workout.workoutDate)}
               </p>
             </article>
-            <article className="rounded-xl bg-slate-50 px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <article className="border border-soot px-3 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                 {t('details.cards.start')}
               </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
+              <p className="mt-1 text-sm font-medium leading-6 text-cement">
                 {formatDateTime(workout.startAt)}
               </p>
             </article>
-            <article className="rounded-xl bg-slate-50 px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <article className="border border-soot px-3 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                 {t('details.cards.end')}
               </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">
+              <p className="mt-1 text-sm font-medium leading-6 text-cement">
                 {formatDateTime(workout.endAt)}
               </p>
             </article>
-            <article className="rounded-xl bg-slate-50 px-3 py-3 sm:col-span-2 lg:col-span-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <article className="border border-soot px-3 py-3 sm:col-span-2 lg:col-span-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                 {t('details.cards.notes')}
               </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-slate-900">{workout.notes || '-'}</p>
+              <p className="mt-1 text-sm font-medium leading-6 text-cement">
+                {workout.notes || '-'}
+              </p>
             </article>
-          </section>
+          </Paper>
 
-          <section className="mb-6 rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-            <h2 className="text-lg font-semibold text-slate-900">
+          <Paper className="mb-6 p-5">
+            <Typography variant="h6" component="h2" sx={{ color: 'var(--enamel)' }}>
               {t('details.addExerciseTitle')}
-            </h2>
+            </Typography>
             <form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={handleSubmit}>
-              <label className="md:col-span-2">
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {t('details.fields.exercise')}
-                </span>
-                <input
-                  type="text"
+              <div className="md:col-span-2">
+                <Field
+                  label={t('details.fields.exercise')}
                   value={exerciseName}
                   onChange={(event) => setExerciseName(event.target.value)}
-                  minLength={2}
                   required
-                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:bg-white focus:ring-2"
+                  slotProps={{ input: { minLength: 2 } }}
                 />
-              </label>
+              </div>
 
-              <label>
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {t('details.fields.bodyPart')}
-                </span>
-                <input
-                  type="text"
-                  value={bodyPartMock}
-                  onChange={(event) => setBodyPartMock(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:bg-white focus:ring-2"
-                />
-              </label>
+              <Field
+                label={t('details.fields.bodyPart')}
+                value={bodyPartMock}
+                onChange={(event) => setBodyPartMock(event.target.value)}
+              />
 
-              <label>
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {t('details.fields.notes')}
-                </span>
-                <input
-                  type="text"
-                  value={notes}
-                  onChange={(event) => setNotes(event.target.value)}
-                  className="w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:bg-white focus:ring-2"
-                />
-              </label>
+              <Field
+                label={t('details.fields.notes')}
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+              />
 
               <div className="md:col-span-4">
                 {error ? (
-                  <p className="mb-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                  <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
-                  </p>
+                  </Alert>
                 ) : null}
 
-                <button
+                <Button
                   type="submit"
+                  variant="contained"
+                  startIcon={<Plus className="h-4 w-4" />}
                   disabled={addExerciseMutation.isPending}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto sm:py-2.5"
+                  className="w-full sm:w-auto"
                 >
-                  <Plus className="h-4 w-4" />
                   {addExerciseMutation.isPending
                     ? t('details.addingExercise')
                     : t('details.addExercise')}
-                </button>
+                </Button>
               </div>
             </form>
-          </section>
+          </Paper>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
+          <Paper className="overflow-hidden">
             {workout.workoutExercises.length ? (
               <>
                 <div className="space-y-3 p-3 sm:hidden">
                   {workout.workoutExercises.map((exercise) => (
-                    <article
-                      key={exercise.id}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"
-                    >
+                    <article key={exercise.id} className="border border-soot p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                          <Typography variant="overline" color="primary" component="p">
                             {t('details.columns.order')} {exercise.orderIndex}
-                          </p>
-                          <h2 className="mt-2 text-base font-semibold text-slate-900">
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            sx={{ mt: 1, fontWeight: 600, color: 'var(--enamel)' }}
+                          >
                             {exercise.exerciseName}
-                          </h2>
+                          </Typography>
                         </div>
-                        <button
-                          type="button"
+                        <Button
+                          color="error"
                           onClick={async () => {
                             const confirmed = window.confirm(t('details.removeExerciseConfirm'));
                             if (!confirmed) return;
                             await deleteExerciseMutation.mutateAsync(String(exercise.id));
                           }}
-                          className="inline-flex items-center justify-center rounded-xl border border-rose-200 px-4 py-3 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
 
                       <div className="mt-4 grid gap-3">
-                        <div className="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <div className="border border-soot px-3 py-3 text-sm text-cement">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                             {t('details.columns.bodyPart')}
                           </p>
                           <p className="mt-1 leading-6">{exercise.bodyPartMock || '-'}</p>
                         </div>
-                        <div className="rounded-xl bg-white px-3 py-3 text-sm text-slate-700">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        <div className="border border-soot px-3 py-3 text-sm text-cement">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
                             {t('details.columns.notes')}
                           </p>
                           <p className="mt-1 leading-6">{exercise.notes || '-'}</p>
@@ -303,53 +303,48 @@ export function WorkoutDetailsPage() {
                   ))}
                 </div>
 
-                <div className="hidden overflow-x-auto sm:block">
-                  <table className="min-w-full divide-y divide-slate-200">
-                    <thead className="bg-slate-50">
+                <TableContainer className="hidden sm:block">
+                  <Table>
+                    <TableHead>
                       {table.getHeaderGroups().map((headerGroup) => (
-                        <tr key={headerGroup.id}>
+                        <TableRow key={headerGroup.id}>
                           {headerGroup.headers.map((header) => (
-                            <th
-                              key={header.id}
-                              className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-                            >
+                            <TableCell key={header.id}>
                               {header.isPlaceholder
                                 ? null
                                 : flexRender(
                                     header.column.columnDef.header,
                                     header.getContext(),
                                   )}
-                            </th>
+                            </TableCell>
                           ))}
-                        </tr>
+                        </TableRow>
                       ))}
-                    </thead>
+                    </TableHead>
 
-                    <tbody className="divide-y divide-slate-100 bg-white">
+                    <TableBody>
                       {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className="transition hover:bg-slate-50/80">
+                        <TableRow key={row.id} hover>
                           {row.getVisibleCells().map((cell) => (
-                            <td key={cell.id} className="px-4 py-3 text-sm text-slate-700">
+                            <TableCell key={cell.id}>
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
+                            </TableCell>
                           ))}
-                        </tr>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </>
             ) : (
-              <div className="px-4 py-8 text-center text-sm text-slate-600">
+              <Typography variant="body2" color="text.secondary" className="px-4 py-8 text-center">
                 {t('details.noExercises')}
-              </div>
+              </Typography>
             )}
-          </section>
+          </Paper>
         </>
       ) : (
-        <section className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {t('details.loadError')}
-        </section>
+        <Alert severity="error">{t('details.loadError')}</Alert>
       )}
     </main>
   );

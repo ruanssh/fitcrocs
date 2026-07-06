@@ -1,3 +1,8 @@
+import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
@@ -112,95 +117,95 @@ export function ProfilePage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+        <Typography variant="overline" color="primary" component="p">
           {t('profilePage.badge')}
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
+        </Typography>
+        <Typography variant="h4" component="h1" sx={{ mt: 1, color: 'var(--enamel)' }}>
           {t('profilePage.title')}
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">{t('profilePage.subtitle')}</p>
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {t('profilePage.subtitle')}
+        </Typography>
       </div>
 
-      <section className="grid gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)] sm:grid-cols-2">
+      <Paper className="grid gap-4 p-6 sm:grid-cols-2">
         <article>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
             {t('profilePage.fields.name')}
           </p>
-          <p className="mt-1 text-sm font-medium text-slate-900">{user?.name ?? '-'}</p>
+          <p className="mt-1 text-sm font-medium text-cement">{user?.name ?? '-'}</p>
         </article>
 
         <article>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
             {t('profilePage.fields.email')}
           </p>
-          <p className="mt-1 text-sm font-medium text-slate-900">{user?.email ?? '-'}</p>
+          <p className="mt-1 text-sm font-medium text-cement">{user?.email ?? '-'}</p>
         </article>
-      </section>
+      </Paper>
 
-      <section className="mt-6 rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-[0_12px_40px_-26px_rgba(0,0,0,0.35)]">
-        <h2 className="text-lg font-semibold text-slate-900">{t('profilePage.photo.title')}</h2>
-        <p className="mt-1 text-sm text-slate-600">{t('profilePage.photo.subtitle')}</p>
+      <Paper className="mt-6 p-6">
+        <Typography variant="h6" component="h2" sx={{ color: 'var(--enamel)' }}>
+          {t('profilePage.photo.title')}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {t('profilePage.photo.subtitle')}
+        </Typography>
 
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
-          {previewPhoto ? (
-            <img
-              src={previewPhoto}
-              alt={t('profilePage.photo.previewAlt')}
-              className="h-24 w-24 rounded-full border border-slate-200 object-cover"
-            />
-          ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-slate-100 text-xs font-semibold text-slate-500">
-              {t('profilePage.photo.previewAlt')}
-            </div>
-          )}
+          <Avatar
+            src={previewPhoto ?? undefined}
+            alt={t('profilePage.photo.previewAlt')}
+            sx={{ width: 96, height: 96 }}
+          >
+            {t('profilePage.photo.previewAlt')}
+          </Avatar>
 
           <div className="flex flex-col gap-2">
-            <label className="inline-flex cursor-pointer items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <Button component="label">
               {t('profilePage.photo.choose')}
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/jpg,image/webp"
                 onChange={handleFileChange}
-                className="hidden"
+                hidden
               />
-            </label>
+            </Button>
 
             <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
+              <Button
+                variant="contained"
                 onClick={handleSavePhoto}
                 disabled={isSavingPhoto}
-                className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isSavingPhoto
                   ? t('profilePage.photo.saving')
                   : t('profilePage.photo.save')}
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                color="error"
                 onClick={handleRemovePhoto}
                 disabled={isSavingPhoto}
-                className="inline-flex items-center justify-center rounded-xl border border-rose-200 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {t('profilePage.photo.remove')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
 
         {photoError ? (
-          <p className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          <Alert severity="error" sx={{ mt: 3 }}>
             {photoError}
-          </p>
+          </Alert>
         ) : null}
 
         {photoSuccess ? (
-          <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          <Alert severity="success" sx={{ mt: 3 }}>
             {photoSuccess}
-          </p>
+          </Alert>
         ) : null}
-      </section>
+      </Paper>
     </main>
   );
 }

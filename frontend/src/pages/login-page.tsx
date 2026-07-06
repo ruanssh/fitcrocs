@@ -1,8 +1,14 @@
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/use-auth';
+import { Field } from '../components/ui/form-field';
 
 export function LoginPage() {
   const { t } = useTranslation(['auth', 'common']);
@@ -40,74 +46,56 @@ export function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.20),transparent_45%),radial-gradient(circle_at_bottom_right,_rgba(6,182,212,0.14),transparent_40%),linear-gradient(180deg,#f8fafc_0%,#eef6f3_100%)]" />
-
-      <section className="w-full max-w-md rounded-3xl border border-white/60 bg-white/92 p-8 shadow-[0_30px_80px_-35px_rgba(15,23,42,0.45)] backdrop-blur-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
+    <main className="flex min-h-screen items-center justify-center px-4 py-10">
+      <Paper className="w-full max-w-md p-8">
+        <Typography variant="overline" color="primary" component="p">
           {t('common:brand')}
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-slate-900">
+        </Typography>
+        <Typography variant="h4" component="h1" sx={{ mt: 1.5, color: 'var(--enamel)' }}>
           {t('auth:login.title')}
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           {t('auth:login.subtitle')}
-        </p>
+        </Typography>
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">
-              {t('auth:login.email')}
-            </span>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:border-emerald-500 focus:bg-white focus:ring-2"
-            />
-          </label>
+          <Field
+            label={t('auth:login.email')}
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            required
+          />
 
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">
-              {t('auth:login.password')}
-            </span>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none ring-emerald-500 transition focus:border-emerald-500 focus:bg-white focus:ring-2"
-            />
-          </label>
+          <Field
+            label={t('auth:login.password')}
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            required
+          />
 
-          {error ? (
-            <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
-              {error}
-            </p>
-          ) : null}
+          {error ? <Alert severity="error">{error}</Alert> : null}
 
-          <button
+          <Button
             type="submit"
+            variant="contained"
+            fullWidth
             disabled={isSubmitting}
-            className="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? t('auth:login.submitting') : t('auth:login.submit')}
-          </button>
+          </Button>
         </form>
 
-        <p className="mt-5 text-sm text-slate-600">
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
           {t('auth:login.noAccount')}{' '}
-          <Link
-            className="font-semibold text-emerald-700 hover:text-emerald-800"
-            to="/register"
-          >
+          <Link component={RouterLink} to="/register">
             {t('auth:login.createAccount')}
           </Link>
-        </p>
-      </section>
+        </Typography>
+      </Paper>
     </main>
   );
 }
