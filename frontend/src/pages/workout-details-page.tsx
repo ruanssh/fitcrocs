@@ -16,44 +16,42 @@ import {
 } from '@tanstack/react-table';
 import axios from 'axios';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { Field } from '../components/ui/form-field';
 import {
   useAddWorkoutExercise,
   useDeleteWorkoutExercise,
+  useUpdateWorkout,
   useWorkoutDetails,
 } from '../hooks/use-workouts';
 import type { WorkoutExercise } from '../types/workouts';
 
 const columnHelper = createColumnHelper<WorkoutExercise>();
 
-function formatDate(value: string) {
-  return format(new Date(value), 'dd/MM/yyyy', { locale: ptBR });
-}
-
-function formatDateTime(value: string | null) {
-  if (!value) return '-';
-  return format(new Date(value), 'dd/MM/yyyy HH:mm', { locale: ptBR });
+function toDateInputValue(value: string) {
+  return format(new Date(value), 'yyyy-MM-dd');
 }
 
 export function WorkoutDetailsPage() {
   const { t } = useTranslation('workouts');
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const workoutId = id ?? '';
 
   const workoutQuery = useWorkoutDetails(id);
+  const updateWorkoutMutation = useUpdateWorkout(workoutId);
   const addExerciseMutation = useAddWorkoutExercise(workoutId);
   const deleteExerciseMutation = useDeleteWorkoutExercise(workoutId);
 
+  const [workoutDate, setWorkoutDate] = useState('');
+  const [workoutNotes, setWorkoutNotes] = useState('');
   const [exerciseName, setExerciseName] = useState('');
-  const [bodyPartMock, setBodyPartMock] = useState('');
-  const [notes, setNotes] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [exerciseError, setExerciseError] = useState<string | null>(null);
 
   const columns = useMemo(
     () => [
@@ -64,14 +62,6 @@ export function WorkoutDetailsPage() {
       columnHelper.accessor('exerciseName', {
         header: t('details.columns.exercise'),
         cell: (info) => info.getValue(),
-      }),
-      columnHelper.accessor('bodyPartMock', {
-        header: t('details.columns.bodyPart'),
-        cell: (info) => info.getValue() ?? '-',
-      }),
-      columnHelper.accessor('notes', {
-        header: t('details.columns.notes'),
-        cell: (info) => info.getValue() ?? '-',
       }),
       columnHelper.display({
         id: 'actions',
@@ -108,30 +98,57 @@ export function WorkoutDetailsPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
+  useEffect(() => {
+    if (!workoutQuery.data) return;
+
+    setWorkoutDate(toDateInputValue(workoutQuery.data.workoutDate));
+    setWorkoutNotes(workoutQuery.data.notes ?? '');
+  }, [workoutQuery.data]);
+
+  async function handleUpdateWorkout(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setUpdateError(null);
+
+    try {
+      await updateWorkoutMutation.mutateAsync({
+        workoutDate,
+        notes: workoutNotes || undefined,
+      });
+      navigate('/workouts', {
+        state: { toast: t('details.edit.success') },
+      });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message;
+        setUpdateError(
+          typeof message === 'string' ? message : t('details.errors.updateWorkout'),
+        );
+      } else {
+        setUpdateError(t('details.errors.updateWorkout'));
+      }
+    }
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
+    setExerciseError(null);
 
     try {
       await addExerciseMutation.mutateAsync({
         exerciseName,
-        bodyPartMock: bodyPartMock || undefined,
-        notes: notes || undefined,
       });
 
       setExerciseName('');
-      setBodyPartMock('');
-      setNotes('');
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const message = err.response?.data?.message;
         if (typeof message === 'string') {
-          setError(message);
+          setExerciseError(message);
         } else {
-          setError(t('details.errors.addExercise'));
+          setExerciseError(t('details.errors.addExercise'));
         }
       } else {
-        setError(t('details.errors.addExercise'));
+        setExerciseError(t('details.errors.addExercise'));
       }
     }
   }
@@ -171,47 +188,52 @@ export function WorkoutDetailsPage() {
         </Paper>
       ) : workout ? (
         <>
-          <Paper className="mb-6 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
-            <article className="border border-soot px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                {t('details.cards.date')}
-              </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-cement">
-                {formatDate(workout.workoutDate)}
-              </p>
-            </article>
-            <article className="border border-soot px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                {t('details.cards.start')}
-              </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-cement">
-                {formatDateTime(workout.startAt)}
-              </p>
-            </article>
-            <article className="border border-soot px-3 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                {t('details.cards.end')}
-              </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-cement">
-                {formatDateTime(workout.endAt)}
-              </p>
-            </article>
-            <article className="border border-soot px-3 py-3 sm:col-span-2 lg:col-span-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                {t('details.cards.notes')}
-              </p>
-              <p className="mt-1 text-sm font-medium leading-6 text-cement">
-                {workout.notes || '-'}
-              </p>
-            </article>
+          <Paper className="mb-6 p-5">
+            <Typography variant="h6" component="h2" sx={{ color: 'var(--enamel)' }}>
+              {t('details.edit.title')}
+            </Typography>
+
+            <form className="mt-4 space-y-4" onSubmit={handleUpdateWorkout}>
+              <Field
+                label={t('create.workoutDate')}
+                type="date"
+                value={workoutDate}
+                onChange={(event) => {
+                  setWorkoutDate(event.target.value);
+                }}
+                required
+              />
+
+              <Field
+                label={t('create.notes')}
+                value={workoutNotes}
+                onChange={(event) => {
+                  setWorkoutNotes(event.target.value);
+                }}
+                multiline
+                rows={4}
+              />
+
+              {updateError ? <Alert severity="error">{updateError}</Alert> : null}
+
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={updateWorkoutMutation.isPending}
+              >
+                {updateWorkoutMutation.isPending
+                  ? t('details.edit.saving')
+                  : t('details.edit.save')}
+              </Button>
+            </form>
           </Paper>
 
           <Paper className="mb-6 p-5">
             <Typography variant="h6" component="h2" sx={{ color: 'var(--enamel)' }}>
               {t('details.addExerciseTitle')}
             </Typography>
-            <form className="mt-4 grid gap-3 md:grid-cols-4" onSubmit={handleSubmit}>
-              <div className="md:col-span-2">
+            <form className="mt-4 grid gap-3" onSubmit={handleSubmit}>
+              <div className="max-w-xl">
                 <Field
                   label={t('details.fields.exercise')}
                   value={exerciseName}
@@ -221,22 +243,10 @@ export function WorkoutDetailsPage() {
                 />
               </div>
 
-              <Field
-                label={t('details.fields.bodyPart')}
-                value={bodyPartMock}
-                onChange={(event) => setBodyPartMock(event.target.value)}
-              />
-
-              <Field
-                label={t('details.fields.notes')}
-                value={notes}
-                onChange={(event) => setNotes(event.target.value)}
-              />
-
-              <div className="md:col-span-4">
-                {error ? (
+              <div>
+                {exerciseError ? (
                   <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
+                    {exerciseError}
                   </Alert>
                 ) : null}
 
@@ -285,20 +295,6 @@ export function WorkoutDetailsPage() {
                         </Button>
                       </div>
 
-                      <div className="mt-4 grid gap-3">
-                        <div className="border border-soot px-3 py-3 text-sm text-cement">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                            {t('details.columns.bodyPart')}
-                          </p>
-                          <p className="mt-1 leading-6">{exercise.bodyPartMock || '-'}</p>
-                        </div>
-                        <div className="border border-soot px-3 py-3 text-sm text-cement">
-                          <p className="text-xs font-semibold uppercase tracking-wide text-ash">
-                            {t('details.columns.notes')}
-                          </p>
-                          <p className="mt-1 leading-6">{exercise.notes || '-'}</p>
-                        </div>
-                      </div>
                     </article>
                   ))}
                 </div>

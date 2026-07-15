@@ -10,6 +10,9 @@ export const dashboardPtBr = {
     currentYearInfo: 'Dados exibidos para o ano atual ({{year}}), de janeiro a dezembro.',
     loadError: 'Não foi possível carregar os dados do dashboard com o período atual.',
   },
+  actions: {
+    addWorkout: 'Adicionar treino',
+  },
   kpis: {
     workoutsTitle: 'Treinos no período',
     workoutsDescription: 'Quantidade total de dias com treino registrado.',

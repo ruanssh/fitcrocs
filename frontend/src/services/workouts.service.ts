@@ -3,6 +3,7 @@ import type {
   AddWorkoutExercisePayload,
   CreateWorkoutPayload,
   ListWorkoutsQuery,
+  UpdateWorkoutPayload,
   Workout,
   WorkoutExercise,
 } from '../types/workouts';
@@ -19,6 +20,11 @@ export async function getWorkout(id: string) {
 
 export async function createWorkout(payload: CreateWorkoutPayload) {
   const { data } = await http.post<Workout>('/workouts', payload);
+  return data;
+}
+
+export async function updateWorkout(id: string, payload: UpdateWorkoutPayload) {
+  const { data } = await http.patch<Workout>(`/workouts/${id}`, payload);
   return data;
 }
 

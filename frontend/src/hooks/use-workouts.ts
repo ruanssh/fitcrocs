@@ -6,11 +6,13 @@ import {
   deleteWorkoutExercise,
   getWorkout,
   listWorkouts,
+  updateWorkout,
 } from '../services/workouts.service';
 import type {
   AddWorkoutExercisePayload,
   CreateWorkoutPayload,
   ListWorkoutsQuery,
+  UpdateWorkoutPayload,
 } from '../types/workouts';
 
 export function useWorkoutsList(filters: ListWorkoutsQuery) {
@@ -46,6 +48,19 @@ export function useDeleteWorkout() {
     mutationFn: (workoutId: string) => deleteWorkout(workoutId),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['workouts', 'list'] });
+    },
+  });
+}
+
+export function useUpdateWorkout(workoutId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: UpdateWorkoutPayload) => updateWorkout(workoutId, payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['workouts', 'detail', workoutId] });
+      void queryClient.invalidateQueries({ queryKey: ['workouts', 'list'] });
+      void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
   });
 }

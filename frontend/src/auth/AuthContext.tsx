@@ -47,8 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(accessToken);
         setUser(profile);
       } catch {
-        clearAccessToken();
-        setToken(null);
+        setToken(accessToken);
         setUser(null);
       } finally {
         setIsLoading(false);

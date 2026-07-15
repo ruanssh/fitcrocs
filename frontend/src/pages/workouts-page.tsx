@@ -1,5 +1,7 @@
+import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Snackbar from '@mui/material/Snackbar';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,9 +18,14 @@ import {
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Plus, Search, Trash2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink, useSearchParams } from 'react-router-dom';
+import {
+  Link as RouterLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { Field } from '../components/ui/form-field';
 import { useDeleteWorkout, useWorkoutsList } from '../hooks/use-workouts';
 import type { Workout } from '../types/workouts';
@@ -36,9 +43,12 @@ function formatTime(value: string | null) {
 
 export function WorkoutsPage() {
   const { t } = useTranslation(['workouts', 'common']);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const fromDate = searchParams.get('fromDate') ?? '';
   const toDate = searchParams.get('toDate') ?? '';
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const filters = useMemo(
     () => ({
@@ -50,6 +60,15 @@ export function WorkoutsPage() {
 
   const workoutsQuery = useWorkoutsList(filters);
   const deleteWorkoutMutation = useDeleteWorkout();
+
+  useEffect(() => {
+    const state = location.state as { toast?: string } | null;
+
+    if (!state?.toast) return;
+
+    setToastMessage(state.toast);
+    navigate(location.pathname + location.search, { replace: true, state: null });
+  }, [location.pathname, location.search, location.state, navigate]);
 
   const columns = useMemo(
     () => [
@@ -300,6 +319,22 @@ export function WorkoutsPage() {
           </Typography>
         )}
       </Paper>
+
+      <Snackbar
+        open={Boolean(toastMessage)}
+        autoHideDuration={3000}
+        onClose={() => setToastMessage(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setToastMessage(null)}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </main>
   );
 }
