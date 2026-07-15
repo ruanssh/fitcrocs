@@ -15,7 +15,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import axios from 'axios';
-import { format } from 'date-fns';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -28,13 +27,10 @@ import {
   useUpdateWorkout,
   useWorkoutDetails,
 } from '../hooks/use-workouts';
+import { toDateOnlyValue } from '../lib/date-only';
 import type { WorkoutExercise } from '../types/workouts';
 
 const columnHelper = createColumnHelper<WorkoutExercise>();
-
-function toDateInputValue(value: string) {
-  return format(new Date(value), 'yyyy-MM-dd');
-}
 
 export function WorkoutDetailsPage() {
   const { t } = useTranslation('workouts');
@@ -101,7 +97,7 @@ export function WorkoutDetailsPage() {
   useEffect(() => {
     if (!workoutQuery.data) return;
 
-    setWorkoutDate(toDateInputValue(workoutQuery.data.workoutDate));
+    setWorkoutDate(toDateOnlyValue(workoutQuery.data.workoutDate));
     setWorkoutNotes(workoutQuery.data.notes ?? '');
   }, [workoutQuery.data]);
 

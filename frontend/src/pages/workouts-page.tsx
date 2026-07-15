@@ -15,8 +15,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Plus, Search, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,18 +26,10 @@ import {
 } from 'react-router-dom';
 import { Field } from '../components/ui/form-field';
 import { useDeleteWorkout, useWorkoutsList } from '../hooks/use-workouts';
+import { formatDateOnly } from '../lib/date-only';
 import type { Workout } from '../types/workouts';
 
 const columnHelper = createColumnHelper<Workout>();
-
-function formatDate(value: string) {
-  return format(new Date(value), 'dd/MM/yyyy', { locale: ptBR });
-}
-
-function formatTime(value: string | null) {
-  if (!value) return '-';
-  return format(new Date(value), 'HH:mm');
-}
 
 export function WorkoutsPage() {
   const { t } = useTranslation(['workouts', 'common']);
@@ -74,17 +64,7 @@ export function WorkoutsPage() {
     () => [
       columnHelper.accessor('workoutDate', {
         header: t('workouts:list.columns.date'),
-        cell: (info) => formatDate(info.getValue()),
-      }),
-      columnHelper.display({
-        id: 'startAt',
-        header: t('workouts:list.columns.start'),
-        cell: (info) => formatTime(info.row.original.startAt),
-      }),
-      columnHelper.display({
-        id: 'endAt',
-        header: t('workouts:list.columns.end'),
-        cell: (info) => formatTime(info.row.original.endAt),
+        cell: (info) => formatDateOnly(info.getValue()),
       }),
       columnHelper.display({
         id: 'exerciseCount',
@@ -219,7 +199,7 @@ export function WorkoutsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <Typography variant="overline" color="primary" component="p">
-                          {formatDate(workout.workoutDate)}
+                          {formatDateOnly(workout.workoutDate)}
                         </Typography>
                         <Typography variant="body1" sx={{ mt: 1, fontWeight: 600, color: 'var(--enamel)' }}>
                           {t('workouts:list.columns.exercises')}: {workout.workoutExercises.length}
@@ -233,21 +213,6 @@ export function WorkoutsPage() {
                         {t('workouts:list.open')}
                       </Button>
                     </div>
-
-                    <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                      <div className="border border-soot px-3 py-2.5">
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-ash">
-                          {t('workouts:list.columns.start')}
-                        </dt>
-                        <dd className="mt-1 font-medium text-cement">{formatTime(workout.startAt)}</dd>
-                      </div>
-                      <div className="border border-soot px-3 py-2.5">
-                        <dt className="text-xs font-semibold uppercase tracking-wide text-ash">
-                          {t('workouts:list.columns.end')}
-                        </dt>
-                        <dd className="mt-1 font-medium text-cement">{formatTime(workout.endAt)}</dd>
-                      </div>
-                    </dl>
 
                     <div className="mt-3 border border-soot px-3 py-3 text-sm text-cement">
                       <p className="text-xs font-semibold uppercase tracking-wide text-ash">
