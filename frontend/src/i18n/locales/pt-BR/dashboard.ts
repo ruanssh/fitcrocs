@@ -25,9 +25,11 @@ export const dashboardPtBr = {
   },
   heatmap: {
     title: 'Frequência diária',
-    subtitle:
-      'Visualização dos treinos do ano atual (janeiro a dezembro), com intensidade em escala progressiva.',
+    subtitle: 'Acompanhe sua consistência mês a mês, com intensidade por dia.',
     totalCount: '{{count}} treino(s) no ano',
+    monthSummary: '{{count}} treino(s) em {{days}} dia(s)',
+    previousMonth: 'Mês anterior',
+    nextMonth: 'Próximo mês',
     tooltip: '{{count}} treino(s) em {{date}}',
     detailsTitle: 'Detalhes do dia',
     detailsHeading: '{{date}} · {{count}} treino(s)',

@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,14 +7,14 @@ datasource db {
 }
 
 model User {
-  id             BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
-  name           String            @db.VarChar(120)
-  email          String            @unique @db.VarChar(190)
-  passwordHash   String            @map("password_hash") @db.VarChar(255)
-  photoBase64    String?           @map("photo_base64") @db.LongText
-  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamp(0)
-  workouts       Workout[]
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name         String    @db.VarChar(120)
+  email        String    @unique(map: "uq_users_email") @db.VarChar(190)
+  passwordHash String    @map("password_hash") @db.VarChar(255)
+  photoBase64  String?   @map("photo_base64") @db.LongText
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  workouts     Workout[]
 
   @@map("users")
 }
@@ -32,23 +27,23 @@ model Workout {
   endAt            DateTime?         @map("end_at") @db.DateTime(0)
   notes            String?           @db.VarChar(500)
   createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt        DateTime          @updatedAt @map("updated_at") @db.Timestamp(0)
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  updatedAt        DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
   workoutExercises WorkoutExercise[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_workouts_user")
 
   @@index([userId, workoutDate], map: "idx_workouts_user_date")
   @@map("workouts")
 }
 
 model WorkoutExercise {
-  id            BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  workoutId     BigInt   @map("workout_id") @db.UnsignedBigInt
-  exerciseName  String   @map("exercise_name") @db.VarChar(120)
-  bodyPartMock  String?  @map("body_part_mock") @db.VarChar(50)
-  orderIndex    Int      @default(1) @map("order_index") @db.UnsignedSmallInt
-  notes         String?  @db.VarChar(300)
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  workout       Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  id           BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  workoutId    BigInt   @map("workout_id") @db.UnsignedBigInt
+  exerciseName String   @map("exercise_name") @db.VarChar(120)
+  bodyPartMock String?  @map("body_part_mock") @db.VarChar(50)
+  orderIndex   Int      @default(1) @map("order_index") @db.UnsignedSmallInt
+  notes        String?  @db.VarChar(300)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  workout      Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_workout_exercises_workout")
 
   @@index([workoutId], map: "idx_workout_exercises_workout")
   @@index([exerciseName], map: "idx_workout_exercises_name")
